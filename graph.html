@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta utf='8'/>
+    <style>
+html,body{
+  margin:0;
+  background:#000
+}
+      
+*{
+  box-sizing:border-box;
+}
+      
+canvas{
+  position:fixed;
+  top:0;
+  right:0;
+  width:100vmin;
+  height:100vmin;
+}
+      
+main{
+  position:fixed;
+  overflow-y:scroll;
+  display:block;
+  left:0;
+  width:calc(100vw - 100vmin);
+  height:100vh;
+  min-width:20rem;
+  background:#111;
+  font-family:Monospace,Monospace;
+  color:#fff;
+  padding:1rem;
+}
+      
+::selection{
+  background:#888;
+  color:#fff;
+}
+
+:focus{
+  outline:none;
+}
+
+#download{
+  display:block;
+  cursor:pointer;
+  text-align:center;
+  text-decoration:none;
+}
+      
+input,select,#download{
+  display:block;
+  padding:.2rem;
+  background:#000;
+  border:.2rem solid #222;
+  font-size:inherit;
+  font-family:inherit;
+  color:inherit;
+  width:100%;
+  margin:.5rem 0;
+  height:2rem;
+}
+input[type=range]{
+  -webkit-appearance:none;
+  background:#000;
+  cursor:ew-resize
+}
+input[type=number]{
+  text-align:right;
+}
+input:hover:not(:focus),#download:hover:not(:focus){
+  background:#111;
+  border-color:#333
+}
+input:focus,#download:focus{
+  border-color:#444
+}
+input:focus:hover,#download:focus:hover{
+  border-color:#555
+}
+      
+h1{
+  margin:0 0 1.25rem 0
+}
+      
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <main>
+      <h1>Ripple Weave</h1>
+      <a id='download' download='ripple-weave.png' href='#'>Download PNG</a>
+      <section>
+        <h2>size</h2>
+        <p>Xing Liu is not responsible for any fires caused by changing the size of the graph.</p>
+        <input name='size' type='range'  value='64' min='0' max='1024'/>
+        <input name='size' type='number' value='64'/>
+      </section>
+      <section>
+        <h2>zoom</h2>
+        <input name='zoom' type='range'  value='-4' min='-64' max='32'/>
+        <input name='zoom' type='number' value='-4'/>
+      </section>
+      <section>
+        <h2>translate x</h2>
+        <input name='xtrans' type='range'  value='0' min='-128' max='128'/>
+        <input name='xtrans' type='number' value='0'/>
+      </section>
+      <section>
+        <h2>translate y</h2>
+        <input name='ytrans' type='range'  value='0' min='-128' max='128'/>
+        <input name='ytrans' type='number' value='0'/>
+      </section>
+      <section>
+        <h2>interpolation</h2>
+        <p>(In Chrome, move the cursor across the image to update)</p>
+        <select name='interpolation'>
+          <option value='auto'>smooth</option>
+          <option value='pixelated'>pixelated</option>
+          <option value='high-quality'>high quality</option>
+          <option value='crisp-edges'>crisp</option>
+        </select>
+      </section>
+    </main>
+  <script>
+      
+let size    = 64,
+    zoom    = -4 ,
+    pow     = 2 ,
+    xtrans  = 0 ,
+    ytrans  = 0
+
+const doc     = document ,
+      
+      canvas  = doc.getElementsByTagName('canvas')[0] ,
+
+      ctx     = canvas.getContext('2d') ,
+      
+      download= doc.getElementById('download') ,
+      
+      handler = ( event ) => {
+        
+        changed = event.target
+
+        switch ( changed.name ) {
+            
+          case 'size':
+            
+            size = changed.value
+            
+          break
+            
+          case 'zoom':
+            
+            zoom = changed.value
+            
+          break
+            
+          case 'xtrans':
+            
+            xtrans = changed.value
+            
+          break
+            
+          case 'ytrans':
+            
+            ytrans = changed.value
+            
+          break
+            
+        }
+                        
+        Array.from(
+          
+          doc.getElementsByName( changed.name )
+        
+        ).forEach( ( input ) => {
+          
+          input.value = changed.value
+        
+        })
+      
+      } ,
+
+      graph   = ( x , y ) => {
+        
+        ctx.fillRect( x , y , 1 , 1 )
+
+      } ,
+
+      funct   = ( x , y ) => {
+
+        return (
+          
+          Math.abs ( 
+          
+            Math.cos ( 
+
+              ( ( x + xtrans/size ) / ( size * ( 2 ** zoom ) ) ) ** pow
+
+            )
+
+            +
+
+            Math.sin ( 
+
+              ( ( y + ytrans/size ) / ( size * ( 2 ** zoom ) ) ) ** pow
+
+            )
+            
+          )
+        
+        )
+
+      } , 
+      
+      draw = () => {
+        
+        canvas.width  = size
+        canvas.height = size
+        
+        for ( let y = 0 ; y < size ; y ++ ) {
+
+          for ( let x = 0 ; x < size ; x ++ ) {
+            
+            ctx.fillStyle = `
+
+              hsl(
+
+                ${
+
+                  funct ( y , x ) * 255
+
+                },
+                ${
+
+                  funct ( x , y ) * 100
+
+                }%,
+                ${
+
+                  funct ( x , y ) * 100
+
+                }%
+              )
+            `
+            
+
+            graph ( x , y )
+
+
+          }
+
+        }
+                  
+      }
+
+Array.from(doc.getElementsByTagName('input')).forEach((element)=>{
+
+  element.addEventListener('input',handler)
+  element.addEventListener('change',draw)
+
+})
+
+doc.getElementsByTagName('select')[0].addEventListener('change',(e)=>{
+  canvas.style.imageRendering = e.target.value
+})
+    
+download.addEventListener('click',()=>{
+    
+  download.href = canvas.toDataURL('img/png').replace(/^data:image\/[^;]*/, 'data:application/octet-stream')  
+    
+} , false)
+
+draw()
+
+    </script>
+
+  </body>
+</html>
