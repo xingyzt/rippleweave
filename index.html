@@ -94,101 +94,48 @@ h1{
   <body>
     <canvas></canvas>
     <main>
-      
-      <h1>RippleWeave</h1>
-      
+      <h1>Ripple Weave</h1>
       <h2>cos(x²) + sin(y²) = 0</h2>
-      
       <a id='download' download='ripple-weave.png' href='#'>Download PNG</a>
-      
       <section>
-        <h2>Render</h2>
-        <section>
-          <h3>Resolution</h3>
-          <p>Xing Liu is not responsible for any fires caused by changing the resolution of the graph.</p>
-          <input name='resolution' type='range'  value='64' min='0' max='1024'/>
-          <input name='resolution' type='number' value='64'/>
-        </section>
-        <section>
-          <h3>Interpolation</h3>
-          <p>(In Chrome, move the cursor across the image to update)</p>
-          <select name='interpolation'>
-            <option value='auto'>smooth</option>
-            <option value='pixelated'>pixelated</option>
-            <option value='high-quality'>high quality</option>
-            <option value='crisp-edges'>crisp</option>
-          </select>
-        </section>
-        <section>
-          <h3>Hue</h3>
-          <select name='hue'>
-            <option value='normal'>normal</option>
-            <option value='inverse' selected>inverse</option>
-            <option value='fixed'>fixed</option>
-          </select>
-          <input name='hue-offset' type='range'  value='0' min='0' max='360'/>
-          <input name='hue-offset' type='number' value='0'/>
-        </section>
-        <section>
-          <h3>Saturation</h3>
-          <select name='sat'>
-            <option value='normal'>normal</option>
-            <option value='inverse'>inverse</option>
-            <option value='fixed' selected>fixed</option>
-          </select>
-          <input name='sat-offset' type='range'  value='0' min='0' max='100'/>
-          <input name='sat-offset' type='number' value='0'/>
-        </section>
-        <section>
-          <h3>Brightness</h3>
-          <select name='lum'>
-            <option value='normal' selected>normal</option>
-            <option value='inverse'>inverse</option>
-            <option value='fixed'>fixed</option>
-          </select>
-          <input name='lum-offset' type='range'  value='0' min='0' max='100'/>
-          <input name='lum-offset' type='number' value='0'/>
-        </section>
+        <h2>resolution</h2>
+        <p>Xing Liu is not responsible for any fires caused by changing the resolution of the graph.</p>
+        <input name='resolution' type='range'  value='64' min='0' max='1024'/>
+        <input name='resolution' type='number' value='64'/>
       </section>
       <section>
-        <h2>Position</h2>
-        <section>
-          <h3>Zoom</h3>
-          <input name='zoom' type='range'  value='-4' min='-64' max='0'/>
-          <input name='zoom' type='number' value='-4'/>
-        </section>
-        <section>
-          <h3>Translate</h3>
-          <h4>x</h4>
-          <input name='x-offset' type='range'  value='0' min='-128' max='128'/>
-          <input name='x-offset' type='number' value='0'/>
-          <h4>y</h4>
-          <input name='y-offset' type='range'  value='0' min='-128' max='128'/>
-          <input name='y-offset' type='number' value='0'/>
-        </section>
+        <h2>zoom</h2>
+        <input name='zoom' type='range'  value='-4' min='-64' max='0'/>
+        <input name='zoom' type='number' value='-4'/>
+      </section>
+      <section>
+        <h2>translate x</h2>
+        <input name='xtrans' type='range'  value='0' min='-128' max='128'/>
+        <input name='xtrans' type='number' value='0'/>
+      </section>
+      <section>
+        <h2>translate y</h2>
+        <input name='ytrans' type='range'  value='0' min='-128' max='128'/>
+        <input name='ytrans' type='number' value='0'/>
+      </section>
+      <section>
+        <h2>interpolation</h2>
+        <p>(In Chrome, move the cursor across the image to update)</p>
+        <select name='interpolation'>
+          <option value='auto'>smooth</option>
+          <option value='pixelated'>pixelated</option>
+          <option value='high-quality'>high quality</option>
+          <option value='crisp-edges'>crisp</option>
+        </select>
       </section>
     </main>
   <script>
       
-let size      = 64,
-    zoom      = -4 ,
-    
-    
-    pow       = 2 ,
-    
-    
-    xOffset   = -size ,
-    yOffset   = -size ,
-    
-    
-    hueOpt    = 1,
-    hueOffset = 0,
-    
-    satOpt    = 2,
-    satOffset = 100,
-    
-    lumOpt    = 0,
-    lumOffset = 50,
+let size    = 64,
+    zoom    = -4 ,
+    pow     = 2 ,
+    xtrans  = -size ,
+    ytrans  = -size
 
 const doc     = document ,
       
@@ -212,45 +159,19 @@ const doc     = document ,
             
           case 'zoom':
             
-            changed.value = - Math.abs(changed.value)
-            
             zoom = changed.value
             
           break
             
-          case 'x-offset':
+          case 'xtrans':
             
-            xOffset = changed.value - size
-            
-          break
-            
-          case 'y-offset':
-            
-            yOffset = changed.value - size
+            xtrans = changed.value - size
             
           break
             
-          case 'hue-offset':
+          case 'ytrans':
             
-            changed.value %= 360
-            
-            hueOffset = changed.value
-            
-          break
-            
-          case 'sat-offset':
-            
-            changed.value = Math.max( changed.value , 100 )
-            
-            satOffset = changed.value
-            
-          break
-            
-          case 'lum-offset':
-            
-            changed.value = Math.max( changed.value , 100 )
-            
-            lumOffset = changed.value
+            ytrans = changed.value - size
             
           break
             
@@ -282,7 +203,7 @@ const doc     = document ,
           
             Math.cos ( 
 
-              ( ( x + xOffset*size/128 ) / ( size * ( 2 ** zoom ) ) ) ** pow
+              ( ( x + xtrans*size/128 ) / ( size * ( 2 ** zoom ) ) ) ** pow
 
             )
 
@@ -290,7 +211,7 @@ const doc     = document ,
 
             Math.sin ( 
 
-              ( ( y + yOffset*size/128 ) / ( size * ( 2 ** zoom ) ) ) ** pow
+              ( ( y + ytrans*size/128 ) / ( size * ( 2 ** zoom ) ) ) ** pow
 
             )
             
@@ -314,79 +235,19 @@ const doc     = document ,
               hsl(
 
                 ${
-            
-                  switch( hueOpt ){
-                    
-                    case 0:
 
-                      ( funct ( x , y ) * 360 + hueOffset ) % 360
-              
-                    break
-              
-                    case 1:
-              
-                      ( funct ( y , x ) * 360 + hueOffset ) % 360
-              
-                    break
-              
-                    case 2:
-                      
-                      hueOffset
-                      
-                    break
-              
-                  }
+                  funct ( y , x ) * 255
 
                 },
                 ${
 
-                  switch( satOpt ){
-                    
-                    case 0:
-
-                      Math.min( ( funct ( x , y ) * 100 + satOffset ) , 100 )
-              
-                    break
-              
-                    case 1:
-              
-                      Math.min( ( funct ( y , x ) * 100 + satOffset ) , 100 )
-              
-                    break
-              
-                    case 2:
-                      
-                      satOffset
-                      
-                    break
-              
-                  }
+                  funct ( x , y ) * 100
 
                 }%,
                 ${
 
-                  switch( lumOpt ){
-                    
-                    case 0:
+                  funct ( x , y ) * 100
 
-                      Math.min( ( funct ( x , y ) * 100 + lumOffset ) , 100 )
-              
-                    break
-              
-                    case 1:
-              
-                      Math.min( ( funct ( y , x ) * 100 + lumOffset ) , 100 )
-              
-                    break
-              
-                    case 2:
-                      
-                      lumOffset
-                      
-                    break
-              
-                  }
-            
                 }%
               )
             `
@@ -401,11 +262,15 @@ const doc     = document ,
                   
       }
 
-Array.from(doc.querySelectorAll('input+select')).forEach((element)=>{
+Array.from(doc.getElementsByTagName('input')).forEach((element)=>{
 
   element.addEventListener('input',handler)
   element.addEventListener('change',draw)
 
+})
+
+doc.getElementsByTagName('select')[0].addEventListener('change',(e)=>{
+  canvas.style.imageRendering = e.target.value
 })
     
 download.addEventListener('click',()=>{
