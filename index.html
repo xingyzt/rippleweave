@@ -94,48 +94,100 @@ h1{
   <body>
     <canvas></canvas>
     <main>
-      <h1>Ripple Weave</h1>
+      
+      <h1>RippleWeave</h1>
+      
       <h2>cos(x²) + sin(y²) = 0</h2>
+      
       <a id='download' download='ripple-weave.png' href='#'>Download PNG</a>
+      
       <section>
-        <h2>resolution</h2>
-        <p>Xing Liu is not responsible for any fires caused by changing the resolution of the graph.</p>
-        <input name='resolution' type='range'  value='64' min='0' max='1024'/>
-        <input name='resolution' type='number' value='64'/>
+        <h2>Render</h2>
+        <section>
+          <h3>Resolution</h3>
+          <p>Xing Liu is not responsible for any fires caused by changing the resolution of the graph.</p>
+          <input name='resolution' type='range'  value='64' min='0' max='1024'/>
+          <input name='resolution' type='number' value='64'/>
+        </section>
+        <section>
+          <h3>Interpolation</h3>
+          <select name='interpolation-opt'>
+            <option value='auto'>smooth</option>
+            <option value='pixelated'>pixelated</option>
+            <option value='high-quality'>high quality</option>
+            <option value='crisp-edges'>crisp</option>
+          </select>
+        </section>
+        <section>
+          <h3>Hue</h3>
+          <select name='hue-opt'>
+            <option value='0'>normal</option>
+            <option value='1' selected>inverse</option>
+            <option value='2'>fixed</option>
+          </select>
+          <input name='hue-offset' type='range'  value='0' min='0' max='360'/>
+          <input name='hue-offset' type='number' value='0'/>
+        </section>
+        <section>
+          <h3>Saturation</h3>
+          <select name='sat-opt'>
+            <option value='0'>normal</option>
+            <option value='1'>inverse</option>
+            <option value='2' selected>fixed</option>
+          </select>
+          <input name='sat-offset' type='range'  value='100' min='0' max='100'/>
+          <input name='sat-offset' type='number' value='100'/>
+        </section>
+        <section>
+          <h3>Brightness</h3>
+          <select name='lum-opt'>
+            <option value='0' selected>normal</option>
+            <option value='1'>inverse</option>
+            <option value='2'>fixed</option>
+          </select>
+          <input name='lum-offset' type='range'  value='50' min='0' max='100'/>
+          <input name='lum-offset' type='number' value='50'/>
+        </section>
       </section>
       <section>
-        <h2>zoom</h2>
-        <input name='zoom' type='range'  value='-4' min='-64' max='0'/>
-        <input name='zoom' type='number' value='-4'/>
-      </section>
-      <section>
-        <h2>translate x</h2>
-        <input name='xtrans' type='range'  value='0' min='-128' max='128'/>
-        <input name='xtrans' type='number' value='0'/>
-      </section>
-      <section>
-        <h2>translate y</h2>
-        <input name='ytrans' type='range'  value='0' min='-128' max='128'/>
-        <input name='ytrans' type='number' value='0'/>
-      </section>
-      <section>
-        <h2>interpolation</h2>
-        <p>(In Chrome, move the cursor across the image to update)</p>
-        <select name='interpolation'>
-          <option value='auto'>smooth</option>
-          <option value='pixelated'>pixelated</option>
-          <option value='high-quality'>high quality</option>
-          <option value='crisp-edges'>crisp</option>
-        </select>
+        <h2>Position</h2>
+        <section>
+          <h3>Zoom</h3>
+          <input name='zoom' type='range'  value='-4' min='-64' max='0'/>
+          <input name='zoom' type='number' value='-4'/>
+        </section>
+        <section>
+          <h3>Translate</h3>
+          <h4>x</h4>
+          <input name='x-offset' type='range'  value='0' min='-128' max='128'/>
+          <input name='x-offset' type='number' value='0'/>
+          <h4>y</h4>
+          <input name='y-offset' type='range'  value='0' min='-128' max='128'/>
+          <input name='y-offset' type='number' value='0'/>
+        </section>
       </section>
     </main>
   <script>
       
-let size    = 64,
-    zoom    = -4 ,
-    pow     = 2 ,
-    xtrans  = -size ,
-    ytrans  = -size
+let size      = 64,
+    zoom      = -4 ,
+    
+    
+    pow       = 2 ,
+    
+    
+    xOffset   = -size ,
+    yOffset   = -size ,
+    
+    
+    hueOpt    = 1,
+    hueOffset = 0,
+    
+    satOpt    = 2,
+    satOffset = 100,
+    
+    lumOpt    = 0,
+    lumOffset = 50
 
 const doc     = document ,
       
@@ -145,48 +197,108 @@ const doc     = document ,
       
       download= doc.getElementById('download') ,
       
+      norm360 = ( value ) => {
+        
+        return Math.abs ( value % 360 )
+        
+      },
+      
+      norm100 = ( value ) => {
+        
+        return Math.min ( ( Math.max ( value , 0 ) ) , 100 )
+        
+      }
+      
       handler = ( event ) => {
         
-        changed = event.target
-
-        switch ( changed.name ) {
+        let name  = event.target.name,
+            value = event.target.value,
+            tag   = event.target.tagName
+                
+        switch ( name ) {
             
           case 'resolution':
             
-            size = changed.value
+            size = value
             
-          break
+            break
+            
+          case 'interpolation-opt':
+            
+            canvas.style.imageRendering = value
+            
+            break
+            
+          case 'hue-opt':
+            
+            hueOpt = value
+            
+            break
+            
+          case 'sat-opt':
+            
+            satOpt = value
+            
+            break
+            
+          case 'lum-opt':
+            
+            lumOpt = value
+            
+            break
             
           case 'zoom':
             
-            zoom = changed.value
+            zoom = value = - Math.abs(value)
             
-          break
+            break
             
-          case 'xtrans':
+          case 'x-offset':
             
-            xtrans = changed.value - size
+            xOffset = value - size
             
-          break
+            break
             
-          case 'ytrans':
+          case 'y-offset':
             
-            ytrans = changed.value - size
+            yOffset = value - size
             
-          break
+            break
+            
+          case 'hue-offset':
+            
+            hueOffset = value = norm360 ( value )
+            
+            break
+            
+          case 'sat-offset':
+            
+            satOffset = value = norm100 ( value )
+            
+            break
+            
+          case 'lum-offset':
+            
+            lumOffset = value = norm100 ( value )
+            
+            break
             
         }
-                        
-        Array.from(
-          
-          doc.getElementsByName( changed.name )
         
-        ).forEach( ( input ) => {
+        if ( tag === 'INPUT' ) {
           
-          input.value = changed.value
+          Array.from(
+
+            doc.getElementsByName( name )
+
+          ).forEach( ( input ) => {
+
+            input.value = value
+
+          })
         
-        })
-      
+        }
+                
       } ,
 
       graph   = ( x , y ) => {
@@ -203,7 +315,7 @@ const doc     = document ,
           
             Math.cos ( 
 
-              ( ( x + xtrans*size/128 ) / ( size * ( 2 ** zoom ) ) ) ** pow
+              ( ( x + xOffset*size/128 ) / ( size * ( 2 ** zoom ) ) ) ** pow
 
             )
 
@@ -211,7 +323,7 @@ const doc     = document ,
 
             Math.sin ( 
 
-              ( ( y + ytrans*size/128 ) / ( size * ( 2 ** zoom ) ) ) ** pow
+              ( ( y + yOffset*size/128 ) / ( size * ( 2 ** zoom ) ) ) ** pow
 
             )
             
@@ -235,18 +347,33 @@ const doc     = document ,
               hsl(
 
                 ${
-
-                  funct ( y , x ) * 255
+            
+                  ( 
+                    ( hueOpt === 0 && norm360 ( funct ( x , y ) * 360 + hueOffset ) ) ||
+                    ( hueOpt === 1 && norm360 ( funct ( y , x ) * 360 + hueOffset ) ) ||
+                    ( hueOpt === 2 && hueOffset )
+              
+                  )
 
                 },
                 ${
-
-                  funct ( x , y ) * 100
+            
+                  ( 
+                    ( satOpt === 0 && norm100 ( funct ( x , y ) * 100 + satOffset ) ) ||
+                    ( satOpt === 1 && norm100 ( funct ( y , x ) * 100 + satOffset ) ) ||
+                    ( satOpt === 2 && satOffset )
+              
+                  )
 
                 }%,
                 ${
 
-                  funct ( x , y ) * 100
+                  ( 
+                    ( lumOpt === 0 && norm100 ( funct ( x , y ) * 100 + lumOffset ) ) ||
+                    ( lumOpt === 1 && norm100 ( funct ( y , x ) * 100 + lumOffset ) ) ||
+                    ( lumOpt === 2 && lumOffset )
+              
+                  )
 
                 }%
               )
@@ -262,15 +389,11 @@ const doc     = document ,
                   
       }
 
-Array.from(doc.getElementsByTagName('input')).forEach((element)=>{
+Array.from(doc.querySelectorAll('input,select')).forEach((element)=>{
 
   element.addEventListener('input',handler)
   element.addEventListener('change',draw)
 
-})
-
-doc.getElementsByTagName('select')[0].addEventListener('change',(e)=>{
-  canvas.style.imageRendering = e.target.value
 })
     
 download.addEventListener('click',()=>{
