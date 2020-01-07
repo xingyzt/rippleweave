@@ -111,8 +111,7 @@ h1{
         </section>
         <section>
           <h3>Interpolation</h3>
-          <p>(In Chrome, move the cursor across the image to update)</p>
-          <select name='interpolation'>
+          <select name='interpolation-opt'>
             <option value='auto'>smooth</option>
             <option value='pixelated'>pixelated</option>
             <option value='high-quality'>high quality</option>
@@ -121,33 +120,33 @@ h1{
         </section>
         <section>
           <h3>Hue</h3>
-          <select name='hue'>
-            <option value='normal'>normal</option>
-            <option value='inverse' selected>inverse</option>
-            <option value='fixed'>fixed</option>
+          <select name='hue-opt'>
+            <option value='0'>normal</option>
+            <option value='1' selected>inverse</option>
+            <option value='2'>fixed</option>
           </select>
           <input name='hue-offset' type='range'  value='0' min='0' max='360'/>
           <input name='hue-offset' type='number' value='0'/>
         </section>
         <section>
           <h3>Saturation</h3>
-          <select name='sat'>
-            <option value='normal'>normal</option>
-            <option value='inverse'>inverse</option>
-            <option value='fixed' selected>fixed</option>
+          <select name='sat-opt'>
+            <option value='0'>normal</option>
+            <option value='1'>inverse</option>
+            <option value='2' selected>fixed</option>
           </select>
-          <input name='sat-offset' type='range'  value='0' min='0' max='100'/>
-          <input name='sat-offset' type='number' value='0'/>
+          <input name='sat-offset' type='range'  value='100' min='0' max='100'/>
+          <input name='sat-offset' type='number' value='100'/>
         </section>
         <section>
           <h3>Brightness</h3>
-          <select name='lum'>
-            <option value='normal' selected>normal</option>
-            <option value='inverse'>inverse</option>
-            <option value='fixed'>fixed</option>
+          <select name='lum-opt'>
+            <option value='0' selected>normal</option>
+            <option value='1'>inverse</option>
+            <option value='2'>fixed</option>
           </select>
-          <input name='lum-offset' type='range'  value='0' min='0' max='100'/>
-          <input name='lum-offset' type='number' value='0'/>
+          <input name='lum-offset' type='range'  value='50' min='0' max='100'/>
+          <input name='lum-offset' type='number' value='50'/>
         </section>
       </section>
       <section>
@@ -188,7 +187,7 @@ let size      = 64,
     satOffset = 100,
     
     lumOpt    = 0,
-    lumOffset = 50,
+    lumOffset = 50
 
 const doc     = document ,
       
@@ -198,74 +197,108 @@ const doc     = document ,
       
       download= doc.getElementById('download') ,
       
+      norm360 = ( value ) => {
+        
+        return Math.abs ( value % 360 )
+        
+      },
+      
+      norm100 = ( value ) => {
+        
+        return Math.min ( ( Math.max ( value , 0 ) ) , 100 )
+        
+      }
+      
       handler = ( event ) => {
         
-        changed = event.target
-
-        switch ( changed.name ) {
+        let name  = event.target.name,
+            value = event.target.value,
+            tag   = event.target.tagName
+                
+        switch ( name ) {
             
           case 'resolution':
             
-            size = changed.value
+            size = value
             
-          break
+            break
+            
+          case 'interpolation-opt':
+            
+            canvas.style.imageRendering = value
+            
+            break
+            
+          case 'hue-opt':
+            
+            hueOpt = value
+            
+            break
+            
+          case 'sat-opt':
+            
+            satOpt = value
+            
+            break
+            
+          case 'lum-opt':
+            
+            lumOpt = value
+            
+            break
             
           case 'zoom':
             
-            changed.value = - Math.abs(changed.value)
+            zoom = value = - Math.abs(value)
             
-            zoom = changed.value
-            
-          break
+            break
             
           case 'x-offset':
             
-            xOffset = changed.value - size
+            xOffset = value - size
             
-          break
+            break
             
           case 'y-offset':
             
-            yOffset = changed.value - size
+            yOffset = value - size
             
-          break
+            break
             
           case 'hue-offset':
             
-            changed.value %= 360
+            hueOffset = value = norm360 ( value )
             
-            hueOffset = changed.value
-            
-          break
+            break
             
           case 'sat-offset':
             
-            changed.value = Math.max( changed.value , 100 )
+            satOffset = value = norm100 ( value )
             
-            satOffset = changed.value
-            
-          break
+            break
             
           case 'lum-offset':
             
-            changed.value = Math.max( changed.value , 100 )
+            lumOffset = value = norm100 ( value )
             
-            lumOffset = changed.value
-            
-          break
+            break
             
         }
-                        
-        Array.from(
-          
-          doc.getElementsByName( changed.name )
         
-        ).forEach( ( input ) => {
+        if ( tag === 'INPUT' ) {
           
-          input.value = changed.value
+          Array.from(
+
+            doc.getElementsByName( name )
+
+          ).forEach( ( input ) => {
+
+            input.value = value
+
+          })
         
-        })
-      
+        }
+                
       } ,
 
       graph   = ( x , y ) => {
@@ -315,78 +348,33 @@ const doc     = document ,
 
                 ${
             
-                  switch( hueOpt ){
-                    
-                    case 0:
-
-                      ( funct ( x , y ) * 360 + hueOffset ) % 360
+                  ( 
+                    ( hueOpt === 0 && norm360 ( funct ( x , y ) * 360 + hueOffset ) ) ||
+                    ( hueOpt === 1 && norm360 ( funct ( y , x ) * 360 + hueOffset ) ) ||
+                    ( hueOpt === 2 && hueOffset )
               
-                    break
-              
-                    case 1:
-              
-                      ( funct ( y , x ) * 360 + hueOffset ) % 360
-              
-                    break
-              
-                    case 2:
-                      
-                      hueOffset
-                      
-                    break
-              
-                  }
+                  )
 
                 },
                 ${
-
-                  switch( satOpt ){
-                    
-                    case 0:
-
-                      Math.min( ( funct ( x , y ) * 100 + satOffset ) , 100 )
+            
+                  ( 
+                    ( satOpt === 0 && norm100 ( funct ( x , y ) * 100 + satOffset ) ) ||
+                    ( satOpt === 1 && norm100 ( funct ( y , x ) * 100 + satOffset ) ) ||
+                    ( satOpt === 2 && satOffset )
               
-                    break
-              
-                    case 1:
-              
-                      Math.min( ( funct ( y , x ) * 100 + satOffset ) , 100 )
-              
-                    break
-              
-                    case 2:
-                      
-                      satOffset
-                      
-                    break
-              
-                  }
+                  )
 
                 }%,
                 ${
 
-                  switch( lumOpt ){
-                    
-                    case 0:
+                  ( 
+                    ( lumOpt === 0 && norm100 ( funct ( x , y ) * 100 + lumOffset ) ) ||
+                    ( lumOpt === 1 && norm100 ( funct ( y , x ) * 100 + lumOffset ) ) ||
+                    ( lumOpt === 2 && lumOffset )
+              
+                  )
 
-                      Math.min( ( funct ( x , y ) * 100 + lumOffset ) , 100 )
-              
-                    break
-              
-                    case 1:
-              
-                      Math.min( ( funct ( y , x ) * 100 + lumOffset ) , 100 )
-              
-                    break
-              
-                    case 2:
-                      
-                      lumOffset
-                      
-                    break
-              
-                  }
-            
                 }%
               )
             `
@@ -401,7 +389,7 @@ const doc     = document ,
                   
       }
 
-Array.from(doc.querySelectorAll('input+select')).forEach((element)=>{
+Array.from(doc.querySelectorAll('input,select')).forEach((element)=>{
 
   element.addEventListener('input',handler)
   element.addEventListener('change',draw)
