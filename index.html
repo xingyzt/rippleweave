@@ -134,8 +134,8 @@ h1{
 let size    = 64,
     zoom    = -4 ,
     pow     = 2 ,
-    xtrans  = 0 ,
-    ytrans  = 0
+    xtrans  = -size ,
+    ytrans  = -size
 
 const doc     = document ,
       
@@ -165,13 +165,13 @@ const doc     = document ,
             
           case 'xtrans':
             
-            xtrans = changed.value
+            xtrans = changed.value - size
             
           break
             
           case 'ytrans':
             
-            ytrans = changed.value
+            ytrans = changed.value - size
             
           break
             
@@ -203,7 +203,7 @@ const doc     = document ,
           
             Math.cos ( 
 
-              ( ( x + xtrans/size ) / ( size * ( 2 ** zoom ) ) ) ** pow
+              ( ( x + xtrans*size/128 ) / ( size * ( 2 ** zoom ) ) ) ** pow
 
             )
 
@@ -211,7 +211,7 @@ const doc     = document ,
 
             Math.sin ( 
 
-              ( ( y + ytrans/size ) / ( size * ( 2 ** zoom ) ) ) ** pow
+              ( ( y + ytrans*size/128 ) / ( size * ( 2 ** zoom ) ) ) ** pow
 
             )
             
