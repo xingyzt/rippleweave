@@ -306,105 +306,109 @@ const doc     = document ,
             value = event.target.value,
             tag   = event.target.tagName
                 
-        switch ( name ) {
-            
-          case 'resolution':
-            
-            size = value = Math.max ( value , 1 )
-            
-            break
-            
-          case 'resolution-opt':
-            
-            canvas.style.imageRendering = value
-            
-            break
-            
-          case 'background-opt':
-            
-            canvas.style.background = value
-            
-            break
-            
-          case 'hue-opt':
-            
-            hueOpt = value
-            
-            break
-            
-          case 'sat-opt':
-            
-            satOpt = value
-            
-            break
-            
-          case 'lum-opt':
-            
-            lumOpt = value
-            
-            break
-            
-          case 'opa-opt':
-            
-            opaOpt = value
-            
-            break
-            
-          case 'zoom':
-            
-            zoom = value = - Math.abs(value)
-            
-            break
-            
-          case 'x-offset':
-            
-            xOffset = value - size/2
-            
-            break
-            
-          case 'y-offset':
-            
-            yOffset = value - size/2
-            
-            break
-            
-          case 'hue-offset':
-            
-            hueOffset = value = norm360 ( value )
-            
-            break
-            
-          case 'sat-offset':
-            
-            satOffset = value = norm100 ( value )
-            
-            break
-            
-          case 'lum-offset':
-            
-            lumOffset = value = norm100 ( value )
-            
-            break
-            
-          case 'opa-offset':
-            
-            opaOffset = value = norm100 ( value )
-            
-            break
-            
-        }
+        if ( value ) {
         
-        if ( tag === 'INPUT' ) {
-          
-          Array.from(
+          switch ( name ) {
 
-            doc.getElementsByName( name )
+            case 'resolution':
 
-          ).forEach( ( input ) => {
+              size = value = Math.max ( value , 1 )
 
-            input.value = value
+              break
 
-          })
+            case 'resolution-opt':
+
+              canvas.style.imageRendering = value
+
+              break
+
+            case 'background-opt':
+
+              canvas.style.background = value
+
+              break
+
+            case 'hue-opt':
+
+              hueOpt = value
+
+              break
+
+            case 'sat-opt':
+
+              satOpt = value
+
+              break
+
+            case 'lum-opt':
+
+              lumOpt = value
+
+              break
+
+            case 'opa-opt':
+
+              opaOpt = value
+
+              break
+
+            case 'zoom':
+
+              zoom = value = - Math.abs(value)
+
+              break
+
+            case 'x-offset':
+
+              xOffset = value - size/2
+
+              break
+
+            case 'y-offset':
+
+              yOffset = value - size/2
+
+              break
+
+            case 'hue-offset':
+
+              hueOffset = value = norm360 ( value )
+
+              break
+
+            case 'sat-offset':
+
+              satOffset = value = norm100 ( value )
+
+              break
+
+            case 'lum-offset':
+
+              lumOffset = value = norm100 ( value )
+
+              break
+
+            case 'opa-offset':
+
+              opaOffset = value = norm100 ( value )
+
+              break
+
+          }
+
+          if ( tag === 'INPUT' ) {
+
+            Array.from(
+
+              doc.getElementsByName( name )
+
+            ).forEach( ( input ) => {
+
+              input.value = value
+
+            })
+
+          }
         
         }
                 
