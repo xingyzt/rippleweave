@@ -4,7 +4,7 @@
     <title>RippleWeave</title>
     <meta utf='8'/>
     <meta name='author'       content='Xing Liu'/>
-    <meta name='description'  content='a pretty neat graph'/>
+    <meta name='description'  content='cos(x²)+sin(y²) is a pretty neat graph'/>
     <meta name='keywords'     content='graph,math,wallpaper'/>
     <link rel='shortcut icon' type='image/png' href='fav.png'/>
     <style>
@@ -166,7 +166,7 @@ input[name=lum-offset][type=range],input[name=opa-offset][type=range]{
       
       <h1>RippleWeave</h1>
       
-      <h2>cos(x²) + sin(y²) = 0</h2>
+      <h2>cos(x<sup>p</sup>) + sin(y<sup>p</sup>)</h2>
 
       <section>
         <section>
@@ -243,7 +243,12 @@ input[name=lum-offset][type=range],input[name=opa-offset][type=range]{
         <section>
           <label>Zoom</label>
           <input name='zoom' type='number' value='0'/>
-          <input name='zoom' type='range'  value='0' min='-1024' max='0' step='.1'/>
+          <input name='zoom' type='range'  value='0' min='-256' max='0' step='.1'/>
+        </section>
+        <section>
+          <label>Exponent</label>
+          <input name='pow' type='number' value='2'/>
+          <input name='pow' type='range' value='2' min='1' max='16'/>
         </section>
         <section>
           <label>Translate</label>
@@ -396,6 +401,12 @@ const doc     = document ,
 
               break
 
+            case 'pow':
+
+              pow = value
+
+              break
+
           }
 
           if ( tag === 'INPUT' ) {
@@ -492,7 +503,7 @@ const doc     = document ,
           element.value=element.value-1/64
         })
         
-      },1000/60)
+      },1000/30)
 
 inputs.forEach((element)=>{
 
