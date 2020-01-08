@@ -22,11 +22,12 @@ canvas{
   right:0;
   width:100vmin;
   height:100vmin;
+  background:#fff;
 }
       
 main{
   position:fixed;
-  overflow-y:scroll;
+  overflow:scroll;
   display:block;
   left:0;
   width:calc(100vw - 100vmin);
@@ -35,7 +36,30 @@ main{
   background:#111;
   font-family:Monospace,Monospace;
   color:#fff;
-  padding:1rem;
+  padding:1rem 1rem 0 .6rem;
+  text-align:center;
+  text-align-last:center;
+}
+      
+@media(prefers-color-scheme:dark){
+  main{
+    filter:invert(1)
+  }
+}
+
+main>section{
+
+  display:flex;
+  flex-wrap:wrap;
+      
+}
+
+section>section{
+   
+  flex:1 0 10rem;
+  min-width:10rem;
+  margin:.2rem;
+  
 }
       
 ::selection{
@@ -47,48 +71,79 @@ main{
   outline:none;
 }
 
-#download{
-  display:block;
-  cursor:pointer;
-  text-align:center;
+.download{
   text-decoration:none;
 }
       
-input,select,#download{
-  display:block;
+section>section>*{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  
   padding:.2rem;
-  background:#000;
-  border:.2rem solid #222;
   font-size:inherit;
   font-family:inherit;
   color:inherit;
   width:100%;
-  margin:.5rem 0;
-  height:2rem;
+  height:2rem;  
+  margin:.2rem;
+  border-width:.2rem;
+  border-style:solid;
 }
+      
+label{
+  background:#222;
+  border-color:#000;
+}
+input,select,.download{
+  background:#000;
+  border-color:#222;
+}
+select,.download{
+  cursor:pointer;
+}
+      
 input[type=range]{
   -webkit-appearance:none;
+  flex:1 0 12rem;
   background:#000;
-  cursor:ew-resize
+  cursor:ew-resize;
+  background-size:calc(100% - .5rem) calc(100% - .5rem);
+  background-position:center;
+  background-repeat:no-repeat;
 }
-input[type=number]{
-  text-align:right;
-}
-input:hover:not(:focus),#download:hover:not(:focus){
+input:hover:not(:focus),.download:hover:not(:focus){
   background:#111;
   border-color:#333
 }
-input:focus,#download:focus{
+input:focus,.download:focus{
   border-color:#444
 }
-input:focus:hover,#download:focus:hover{
+input:focus:hover,.download:focus:hover{
   border-color:#555
 }
       
-h1{
-  margin:0 0 1.25rem 0
-}
-      
+input[name=hue-offset][type=range]{
+  --sat:100%;
+  --lum:10%;
+  background-image:linear-gradient(
+    90deg,
+    hsl(0deg,var(--sat),var(--lum)),
+    hsl(120deg,var(--sat),var(--lum)),
+    hsl(240deg,var(--sat),var(--lum)),
+    hsl(360deg,var(--sat),var(--lum))
+  );
+} 
+input[name=sat-offset][type=range]{
+  background-image:linear-gradient(
+    90deg,
+    hsl(0deg,0%,10%),
+    hsl(120deg,33.3%,12%),
+    hsl(240deg,66.7%,14%),
+    hsl(360deg,100%,16%)
+  );
+} 
+
     </style>
   </head>
   <body>
@@ -98,96 +153,102 @@ h1{
       <h1>RippleWeave</h1>
       
       <h2>cos(x²) + sin(y²) = 0</h2>
-      
-      <a id='download' download='ripple-weave.png' href='#'>Download PNG</a>
-      
+
       <section>
-        <h2>Render</h2>
         <section>
-          <h3>Resolution</h3>
-          <p>Xing Liu is not responsible for any fires caused by changing the resolution of the graph.</p>
-          <input name='resolution' type='range'  value='64' min='0' max='1024'/>
-          <input name='resolution' type='number' value='64'/>
+          <label>Download</label>
+          <a class='download image' id='png' download='ripple-weave.png' href='#'>PNG</a>
+          <a class='download image' id='jpg' download='ripple-weave.jpg' href='#'>JPG</a>
         </section>
         <section>
-          <h3>Interpolation</h3>
-          <select name='interpolation-opt'>
+          <label>Resolution</label>
+          <select name='resolution-opt'>
             <option value='auto'>smooth</option>
             <option value='pixelated'>pixelated</option>
-            <option value='high-quality'>high quality</option>
-            <option value='crisp-edges'>crisp</option>
+          </select>
+          <input name='resolution' type='number' value='128'/>
+          <input name='resolution' type='range'  value='128' min='1' max='1024' orient='vertical'/>
+        </section>
+        <section>
+          <label>Background</label>
+          <select name='background-opt'>
+            <option value='white'>white</option>
+            <option value='black'>black</option>
           </select>
         </section>
         <section>
-          <h3>Hue</h3>
-          <select name='hue-opt'>
-            <option value='0'>normal</option>
-            <option value='1' selected>inverse</option>
-            <option value='2'>fixed</option>
+          <label>Hue</label>
+          <select name='hue-opt' title='base function'>
+            <option value='0'>0</option>
+            <option value='1'>f(x,y)</option>
+            <option value='2' selected>f(y,x)</option>
+            <option value='3'>1-f(x,y)</option>
+            <option value='4'>1-f(y,x)</option>
           </select>
-          <input name='hue-offset' type='range'  value='0' min='0' max='360'/>
-          <input name='hue-offset' type='number' value='0'/>
+          <input name='hue-offset' title='offset' type='number' value='0'/>
+          <input name='hue-offset' title='offset' type='range'  value='0' min='0' max='360' orient='vertical'/>
         </section>
         <section>
-          <h3>Saturation</h3>
-          <select name='sat-opt'>
-            <option value='0'>normal</option>
-            <option value='1'>inverse</option>
-            <option value='2' selected>fixed</option>
+          <label>Saturation</label>
+          <select name='sat-opt' title='base function'>
+            <option value='0' selected>0</option>
+            <option value='1'>f(x,y)</option>
+            <option value='2'>f(y,x)</option>
+            <option value='3'>1-f(x,y)</option>
+            <option value='4'>1-f(y,x)</option>
           </select>
-          <input name='sat-offset' type='range'  value='100' min='0' max='100'/>
-          <input name='sat-offset' type='number' value='100'/>
+          <input name='sat-offset' title='offset' type='number' value='100'/>
+          <input name='sat-offset' title='offset' type='range'  value='100' min='0' max='100' orient='vertical'/>
         </section>
         <section>
-          <h3>Brightness</h3>
-          <select name='lum-opt'>
-            <option value='0' selected>normal</option>
-            <option value='1'>inverse</option>
-            <option value='2'>fixed</option>
+          <label>Opacity</label>
+          <select name='opa-opt' title='base function'>
+            <option value='0'>0</option>
+            <option value='1' selected>f(x,y)</option>
+            <option value='2'>f(y,x)</option>
+            <option value='3'>1-f(x,y)</option>
+            <option value='4'>1-f(y,x)</option>
           </select>
-          <input name='lum-offset' type='range'  value='50' min='0' max='100'/>
-          <input name='lum-offset' type='number' value='50'/>
+          <input name='opa-offset' title='offset' type='number' value='0'/>
+          <input name='opa-offset' title='offset' type='range'  value='0' min='0' max='100' orient='vertical'/>
         </section>
-      </section>
-      <section>
-        <h2>Position</h2>
         <section>
-          <h3>Zoom</h3>
-          <input name='zoom' type='range'  value='-4' min='-64' max='0'/>
+          <label>Zoom</label>
           <input name='zoom' type='number' value='-4'/>
+          <input name='zoom' type='range'  value='-4' min='-64' max='0'/>
         </section>
         <section>
-          <h3>Translate</h3>
-          <h4>x</h4>
-          <input name='x-offset' type='range'  value='0' min='-128' max='128'/>
+          <label>Translate</label>
+          <label>x</label>
+          <input name='x-offset' type='range'  value='0' min='-128' max='128' orient='vertical'/>
           <input name='x-offset' type='number' value='0'/>
-          <h4>y</h4>
-          <input name='y-offset' type='range'  value='0' min='-128' max='128'/>
+          <label>y</label>
+          <input name='y-offset' type='range'  value='0' min='-128' max='128' orient='vertical'/>
           <input name='y-offset' type='number' value='0'/>
         </section>
       </section>
     </main>
   <script>
       
-let size      = 64,
+let size      = 128 ,
     zoom      = -4 ,
     
     
     pow       = 2 ,
     
     
-    xOffset   = -size ,
-    yOffset   = -size ,
+    xOffset   = -size/2 ,
+    yOffset   = -size/2 ,
     
     
-    hueOpt    = 1,
+    hueOpt    = 2,
     hueOffset = 0,
     
-    satOpt    = 2,
+    satOpt    = 0,
     satOffset = 100,
     
-    lumOpt    = 0,
-    lumOffset = 50
+    opaOpt    = 1,
+    opaOffset = 0
 
 const doc     = document ,
       
@@ -195,7 +256,8 @@ const doc     = document ,
 
       ctx     = canvas.getContext('2d') ,
       
-      download= doc.getElementById('download') ,
+      inputs    = Array.from(doc.querySelectorAll('input,select')) ,
+      downloads = Array.from(doc.getElementsByClassName('download')) ,
       
       norm360 = ( value ) => {
         
@@ -207,7 +269,7 @@ const doc     = document ,
         
         return Math.min ( ( Math.max ( value , 0 ) ) , 100 )
         
-      }
+      },
       
       handler = ( event ) => {
         
@@ -219,13 +281,19 @@ const doc     = document ,
             
           case 'resolution':
             
-            size = value
+            size = value = Math.max ( value , 1 )
             
             break
             
-          case 'interpolation-opt':
+          case 'resolution-opt':
             
             canvas.style.imageRendering = value
+            
+            break
+            
+          case 'background-opt':
+            
+            canvas.style.background = value
             
             break
             
@@ -241,9 +309,9 @@ const doc     = document ,
             
             break
             
-          case 'lum-opt':
+          case 'opa-opt':
             
-            lumOpt = value
+            opaOpt = value
             
             break
             
@@ -255,13 +323,13 @@ const doc     = document ,
             
           case 'x-offset':
             
-            xOffset = value - size
+            xOffset = value - size/2
             
             break
             
           case 'y-offset':
             
-            yOffset = value - size
+            yOffset = value - size/2
             
             break
             
@@ -277,9 +345,9 @@ const doc     = document ,
             
             break
             
-          case 'lum-offset':
+          case 'opa-offset':
             
-            lumOffset = value = norm100 ( value )
+            opaOffset = value = norm100 ( value )
             
             break
             
@@ -327,7 +395,7 @@ const doc     = document ,
 
             )
             
-          )
+          ) / 2
         
         )
 
@@ -342,68 +410,64 @@ const doc     = document ,
 
           for ( let x = 0 ; x < size ; x ++ ) {
             
+            let opt = [ 0,
+                        funct ( x , y ),
+                        funct ( y , x ),
+                      ]
+            
+            opt[3] = 1 - opt[1] 
+            opt[4] = 1 - opt[2] 
+            
             ctx.fillStyle = `
 
-              hsl(
+              hsla(
 
                 ${
-            
-                  ( 
-                    ( hueOpt === 0 && norm360 ( funct ( x , y ) * 360 + hueOffset ) ) ||
-                    ( hueOpt === 1 && norm360 ( funct ( y , x ) * 360 + hueOffset ) ) ||
-                    ( hueOpt === 2 && hueOffset )
               
-                  )
+                  opt[hueOpt]*360 + hueOffset
 
                 },
                 ${
             
-                  ( 
-                    ( satOpt === 0 && norm100 ( funct ( x , y ) * 100 + satOffset ) ) ||
-                    ( satOpt === 1 && norm100 ( funct ( y , x ) * 100 + satOffset ) ) ||
-                    ( satOpt === 2 && satOffset )
-              
-                  )
+                  opt[satOpt]*100 + satOffset
 
                 }%,
+                50%,
                 ${
 
-                  ( 
-                    ( lumOpt === 0 && norm100 ( funct ( x , y ) * 100 + lumOffset ) ) ||
-                    ( lumOpt === 1 && norm100 ( funct ( y , x ) * 100 + lumOffset ) ) ||
-                    ( lumOpt === 2 && lumOffset )
-              
-                  )
+                  opt[opaOpt] + opaOffset/100
 
-                }%
+                }
               )
             `
             
-
             graph ( x , y )
-
 
           }
 
         }
-                  
+
       }
 
-Array.from(doc.querySelectorAll('input,select')).forEach((element)=>{
+inputs.forEach((element)=>{
 
   element.addEventListener('input',handler)
   element.addEventListener('change',draw)
 
 })
     
-download.addEventListener('click',()=>{
+downloads.forEach((element)=>{
+  
+  element.addEventListener('click',()=>{
     
-  download.href = canvas.toDataURL('img/png').replace(/^data:image\/[^;]*/, 'data:application/octet-stream')  
-    
-} , false)
+    element.href = canvas.toDataURL(`img/${element.id}`).replace(/^data:image\/[^;]*/, 'data:application/octet-stream')  
+  
+  } , false)
+  
+})
 
 draw()
-
+    
     </script>
 
   </body>
