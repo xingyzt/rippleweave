@@ -6,6 +6,7 @@
     <meta name='author'       content='Xing Liu'/>
     <meta name='description'  content='a pretty neat graph'/>
     <meta name='keywords'     content='graph,math,wallpaper'/>
+    <link rel='shortcut icon' type='image/png' href='/fav.png'/>
     <style>
 html,body{
   margin:0;
@@ -28,6 +29,7 @@ canvas{
   width:100vmin;
   height:100vmin;
   background:#fff;
+  image-rendering:pixelated
 }
       
 main{
@@ -175,11 +177,11 @@ input[name=lum-offset][type=range],input[name=opa-offset][type=range]{
         <section>
           <label>Resolution</label>
           <select name='resolution-opt'>
-            <option value='auto'>smooth</option>
             <option value='pixelated'>pixelated</option>
+            <option value='auto'>smooth</option>
           </select>
-          <input name='resolution' type='number' value='128'/>
-          <input name='resolution' type='range'  value='128' min='1' max='1024'/>
+          <input name='resolution' type='number' value='32'/>
+          <input name='resolution' type='range'  value='32' min='1' max='1024'/>
         </section>
         <section>
           <label>Background</label>
@@ -240,8 +242,8 @@ input[name=lum-offset][type=range],input[name=opa-offset][type=range]{
         </section>
         <section>
           <label>Zoom</label>
-          <input name='zoom' type='number' value='-4'/>
-          <input name='zoom' type='range'  value='-4' min='-64' max='0'/>
+          <input name='zoom' type='number' value='0'/>
+          <input name='zoom' type='range'  value='0' min='-1024' max='0' step='.1'/>
         </section>
         <section>
           <label>Translate</label>
@@ -256,15 +258,15 @@ input[name=lum-offset][type=range],input[name=opa-offset][type=range]{
     </main>
   <script>
       
-let size      = 128 ,
+let size      = 32 ,
     zoom      = -4 ,
     
     
     pow       = 2 ,
     
     
-    xOffset   = -size/2 ,
-    yOffset   = -size/2 ,
+    xOffset   = -64 ,
+    yOffset   = -64 ,
     
     
     hueOpt    = 2,
@@ -428,7 +430,7 @@ const doc     = document ,
           
             Math.cos ( 
 
-              ( ( x + xOffset*size/128 ) / ( size * ( 2 ** zoom ) ) ) ** pow
+              ( ( x + xOffset*size/128 ) / ( size / -zoom ) ) ** pow
 
             )
 
@@ -436,7 +438,7 @@ const doc     = document ,
 
             Math.sin ( 
 
-              ( ( y + yOffset*size/128 ) / ( size * ( 2 ** zoom ) ) ) ** pow
+              ( ( y + yOffset*size/128 ) / ( size / -zoom ) ) ** pow
 
             )
             
@@ -480,7 +482,17 @@ const doc     = document ,
 
         }
 
-      }
+      } ,
+      
+      play = setInterval(()=>{
+        
+        zoom-=1/64
+        draw()
+        Array.from(doc.getElementsByName('zoom')).forEach((element)=>{
+          element.value=element.value-1/64
+        })
+        
+      },1000/60)
 
 inputs.forEach((element)=>{
 
@@ -499,8 +511,13 @@ downloads.forEach((element)=>{
   
 })
 
-draw()
-    
+doc.addEventListener('click',()=>{
+  clearInterval(play)
+})
+doc.addEventListener('keydown',()=>{
+  clearInterval(play)
+})
+
     </script>
 
   </body>
