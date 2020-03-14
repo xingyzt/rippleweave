@@ -12,12 +12,6 @@ html,body{
   margin:0;
 }
  
-body{
-  background-image:linear-gradient(90deg,#fff8,#fff8 50%,#0008 50%,#0008),
-                   linear-gradient(#fff,#fff 50%,#000 50%,#000);
-  background-size:4rem 4rem;
-}
-      
 *{
   box-sizing:border-box;
 }
@@ -179,12 +173,14 @@ input[name=lum-offset][type=range],input[name=alpha-offset][type=range]{
       	<section>
 	      	<label>Function</label>
           <select name='f'>
-            <option value='|sin(x^2)+cos(y^2)|/2'>|sin(x^2)+cos(y^2)|/2</option>
+            <option value='custom'>custom</option>
+            <option value='|sin(x^2)+cos(y^2)|/2' selected>|sin(x^2)+cos(y^2)|/2</option>
             <option value='|sin(x^2)+cos(y^2)|/2'>|sin(x^2)-cos(y^2)|/2</option>
             <option value='|tan(x/y)*(y-sin(x))+cos(x/y)|*x'>|tan(x/y)*(y-sin(x))+cos(x/y)|*x</option>
+            <option value='sin(x)^tan(x/y)'>sin(x)^tan(x/y)</option>
             <option value='|tan(x/y)*(y-sin(y*x))+cos(x/y)|*x'>|tan(x/y)*(y-sin(y*x))+cos(x/y)|*x</option>
             <option value='|cos(x/y)-tan(x/y)*(y-sin(y*x))|*x'>|cos(x/y)-tan(x/y)*(y-sin(y*x))|*x</option>
-            <option value='custom'>custom</option>
+            <option value='tan(sin(x)/y)'>tan(sin(x)/y)</option>
           </select>
 	        <input id='custom-function' name='f' type='text' value='|sin(x^2)+cos(y^2)|/2'/>
          </section>
