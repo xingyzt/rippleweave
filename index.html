@@ -1,140 +1,415 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-	<head>
-		<style>
+  <head>
+    <title>RippleWeave</title>
+    <meta utf='8'/>
+    <meta name='author'       content='Xing Liu'/>
+    <meta name='description'  content='cos(x²)+sin(y²) is a pretty neat graph'/>
+    <meta name='keywords'     content='graph,math,wallpaper'/>
+    <link rel='shortcut icon' type='image/png' href='fav.png'/>
+    <style>
+html,body{
+  margin:0;
+}
+      
+body{
+  background-image:linear-gradient(90deg,#fff8,#fff8 50%,#0008 50%,#0008),
+                   linear-gradient(#fff,#fff 50%,#000 50%,#000);
+  background-size:4rem 4rem;
+}
+      
 *{
-	box-sizing:border-box;
+  box-sizing:border-box;
 }
-html{
-	background-color:black;
+      
+canvas{
+  position:fixed;
+  top:0;
+  right:0;
+  width:100vmin;
+  height:100vmin;
+  background:#fff;
+  image-rendering:pixelated
 }
-s-game{
-	--inch:calc(100vmin/180);
-	
-	--tile-color-even:hsl(000deg,000%,10%);
-	--tile-color-odd:hsl(000deg,000%,11%);
-	--tile-fancy:1;
-	
-	--tape-opacity:50%;
-	
-	--team-one-color:hsl(000deg,100%,050%);
-	--team-two-color:hsl(210deg,100%,050%);
-	--team-neutral-color:hsl(40deg,100%,050%);
-	
-	width:100vmin;
-	height:100vmin;
-	font-size:0;
-	right:0;
-	bottom:0;
-	overflow:hidden;
+      
+main{
+  position:fixed;
+  overflow:scroll;
+  display:block;
+  left:0;
+  width:calc(100vw - 100vmin);
+  height:100vh;
+  min-width:20rem;
+  background:#111;
+  font-family:Monospace,Monospace;
+  color:#fff;
+  padding:1rem 1rem 0 .6rem;
+  text-align:center;
+  text-align-last:center;
 }
-s-game,s-game *{
-	position:absolute;
-	display:block;
+
+main>section{
+
+  display:flex;
+  flex-wrap:wrap;
+      
 }
-#field,#bridge{
-	width:100%;
-	height:100%;
-	top:0;
-	left:0;
+
+section>section{
+   
+  flex:1 0 10rem;
+  min-width:10rem;
+  margin:.2rem;
+  
 }
-#tiles-even{
-	fill:var(--tile-color-even)
+      
+::selection{
+  background:#888;
+  color:#fff;
 }
-#tiles-odd{
-	fill:var(--tile-color-odd);
-	stroke:var(--tile-color-even);
-	stroke-width:calc(2*var(--tile-fancy))
+
+:focus{
+  outline:none;
 }
-#tiles-texture{
-	image-rendering:pixelated
+
+.download{
+  text-decoration:none;
 }
-#wall{
-	stroke:hsl(000deg,000%,020%)
+      
+section>section>*{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  
+  padding:.2rem;
+  font-size:inherit;
+  font-family:inherit;
+  color:inherit;
+  width:100%;
+  height:2rem;
+  margin:.2rem;
+  border-width:.2rem;
+  border-style:solid;
 }
-#tapes{
-	opacity:var(--tape-opacity);
+      
+label{
+  background:#222;
+  border-color:#000;
 }
-#tapes-team-one,#bridge-team-one{
-	stroke:var(--team-one-color);
+input,select,.download{
+  background:#000;
+  border-color:#222;
 }
-#tapes-team-two,#bridge-team-two{
-	stroke:var(--team-two-color);
+select,.download{
+  cursor:pointer;
 }
-#bridge-neutral{
-	stroke:var(--team-neutral-color);
+      
+input[type=range]{
+  -webkit-appearance:none;
+  flex:1 0 12rem;
+  background:#000;
+  cursor:ew-resize;
+  background-size:calc(100% - .5rem) calc(100% - .5rem);
+  background-position:center;
+  background-repeat:no-repeat;
 }
-		</style>
-	</head>
-	<body>
-		<s-game>
-			<svg id='field' viewBox='0 0 180 180'>
-				<g id='tiles'>
-					<rect id='tiles-even'
-						width='180'
-						height='180'
-						stroke-width='2'
-						stroke='black'
-					/>
-					<path id='tiles-odd'
-						d='M0 0v180h30V0h30v180h30V0h30v180h30V0h30
-							 v30H0v30h180v30H0v30h180v30H0v30h180H0z'
-						stroke-width='2'
-						stroke-dasharray='2'
-					/>
-					<image id='tiles-texture'
-						href='tiles-texture.png'
-						width='180'
-						height='180'
-						opacity='0.005'
-					/>
-				</g>
-				<g id='tapes'>
-					<defs>
-						<path id='tapes-template'
-							fill='none'
-							stroke-width='2'
-							stroke-linecap='square'
-							d='M0 152h28v28
-								 M0 92h60z
-								 M28 0v2h-2v2h-2v2h-2v2h-2v2h-2v2h-2v2h-2v2h-2v2h-2v2h-2v2h-2v2h-2v2h-2v2'
-						/>
-					</defs>
-					<use id='tapes-team-one' href='#tapes-template'/>
-					<use id='tapes-team-two' href='#tapes-template' x='-180' transform='scale(-1,1)'/>
-				</g>
-				<rect id='ramp'
-					width='60'
-					height='20'
-					x='60'
-					y='80'
-					stroke='#111'
-					stroke-width='2'
-				/>
-				<path id='bridge-tower'
-					stroke-linecap='square'
-					stroke-width='2'
-					stroke='#444'
-					d='M60 80v20m60 0v-20'
-				/>
-				<path id='bridge-holder'
-					stroke-linecap='square'
-					stroke-width='2'
-					stroke='#282828'
-					d='M60 88v4m60 0v-4'
-				/>
-				<rect id='wall'
-					width='180'
-					height='180'
-					fill='none'
-					stroke-width='2'
-				/>
-			</svg>
-			<svg id='bridge' viewBox='0 0 180 180' stroke-width='2' stroke-lineend='square' stroke-dasharray='2'>
-				<path id='bridge-neutral' d='M61 90h58'/>
-				<path id='bridge-team-one' d='M1 88h58m0 4h-58'/>
-				<path id='bridge-team-two' d='M121 88h58m0 4h-58'/>
-			</svg>
-		</s-game>
-	</body>
+input:hover:not(:focus),.download:hover:not(:focus){
+  background:#111;
+  border-color:#333
+}
+input:focus,.download:focus{
+  border-color:#444
+}
+input:focus:hover,.download:focus:hover{
+  border-color:#555
+}
+      
+input[name=hue-offset][type=range]{
+  --sat:100%;
+  --lum:10%;
+  background-image:linear-gradient(
+    90deg,
+    hsl(0deg,var(--sat),var(--lum)),
+    hsl(120deg,var(--sat),var(--lum)),
+    hsl(240deg,var(--sat),var(--lum)),
+    hsl(360deg,var(--sat),var(--lum))
+  );
+}
+input[name=sat-offset][type=range]{
+  background-image:linear-gradient(
+    90deg,
+    hsl(0deg,0%,10%),
+    hsl(120deg,33.3%,12%),
+    hsl(240deg,66.7%,14%),
+    hsl(360deg,100%,16%)
+  );
+}
+input[name=lum-offset][type=range],input[name=opa-offset][type=range]{
+  background-image:linear-gradient(90deg,#000,#222);
+}
+
+            
+@media(prefers-color-scheme:light){
+  main{
+    filter:invert(1)
+  }
+  input[name=lum-offset][type=range],input[name=opa-offset][type=range]{
+    background-image:linear-gradient(90deg,#222,#000);
+  }
+}
+
+    </style>
+  </head>
+  <body>
+    <canvas></canvas>
+    <main>
+      
+      <h1>RippleWeave</h1>
+      
+      <section>
+      	<section>
+	      	<label>Function</label>
+	        <select name='f'>
+	          <option value='|tan(x^p)+cos(y^p)|'>|cos(x^p)+sin(y^p)|</option>
+	          <option value='|tan(x/y)*(y-sin(xy)+cos(x/y)|x'>|tan(x/y)*(y-sin(xy)+cos(x/y)|x</option>
+	        </select>
+        </section>
+    	</section>
+
+      <section>
+        <section>
+          <label>Download</label>
+          <a class='download image' id='png' download='ripple-weave.png' href='#'>PNG</a>
+          <a class='download image' id='jpg' download='ripple-weave.jpg' href='#'>JPG</a>
+        </section>
+        <section>
+          <label>Resolution</label>
+          <select name='resolution-opt'>
+            <option value='pixelated'>pixelated</option>
+            <option value='auto'>smooth</option>
+          </select>
+          <input name='resolution' type='number' value='32'/>
+          <input name='resolution' type='range'  value='32' min='1' max='1024'/>
+        </section>
+        <section>
+          <label>Zoom</label>
+          <input name='zoom' type='number' value='-4'/>
+          <input name='zoom' type='range'  value='-4' min='-256' max='0' step='.1'/>
+        </section>
+        <section>
+          <label>Hue</label>
+          <select name='hue-opt' title='base function'>
+            <option value='0'>0</option>
+            <option value='1'>f(x,y)</option>
+            <option value='2' selected>f(y,x)</option>
+            <option value='3'>1-f(x,y)</option>
+            <option value='4'>1-f(y,x)</option>
+          </select>
+          <input name='hue-offset' title='offset' type='number' value='0'/>
+          <input name='hue-offset' title='offset' type='range'  value='0' min='0' max='360'/>
+        </section>
+        <section>
+          <label>Saturation</label>
+          <select name='sat-opt' title='base function'>
+            <option value='0' selected>0</option>
+            <option value='1'>f(x,y)</option>
+            <option value='2'>f(y,x)</option>
+            <option value='3'>1-f(x,y)</option>
+            <option value='4'>1-f(y,x)</option>
+          </select>
+          <input name='sat-offset' title='offset' type='number' value='100'/>
+          <input name='sat-offset' title='offset' type='range'  value='100' min='0' max='100'/>
+        </section>
+        <section>
+          <label>Brightness</label>
+          <select name='lum-opt' title='base function'>
+            <option value='0'>0</option>
+            <option value='1' selected>f(x,y)</option>
+            <option value='2'>f(y,x)</option>
+            <option value='3'>1-f(x,y)</option>
+            <option value='4'>1-f(y,x)</option>
+          </select>
+          <input name='lum-offset' title='offset' type='number' value='0'/>
+          <input name='lum-offset' title='offset' type='range'  value='0' min='0' max='100'/>
+        </section>
+        <section>
+          <label>Opacity</label>
+          <select name='opa-opt' title='base function'>
+            <option value='0' selected>0</option>
+            <option value='1'>f(x,y)</option>
+            <option value='2'>f(y,x)</option>
+            <option value='3'>1-f(x,y)</option>
+            <option value='4'>1-f(y,x)</option>
+          </select>
+          <input name='opa-offset' title='offset' type='number' value='100'/>
+          <input name='opa-offset' title='offset' type='range'  value='100' min='0' max='100'/>
+        </section>
+        <section>
+          <label>Background</label>
+          <select name='background-opt'>
+            <option value='white'>white</option>
+            <option value='grey'>grey</option>
+            <option value='black'>black</option>
+            <option value='transparent'>transparent</option>
+          </select>
+        </section>
+        <section>
+          <label>Exponent</label>
+          <input name='p' type='number' value='2'/>
+          <input name='p' type='range' value='2' min='-16' max='16'/>
+        </section>
+        <section>
+          <label>Translate</label>
+          <label>x</label>
+          <input name='x-offset' type='range'  value='0' min='-128' max='128' orient='vertical'/>
+          <input name='x-offset' type='number' value='0'/>
+          <label>y</label>
+          <input name='y-offset' type='range'  value='0' min='-128' max='128' orient='vertical'/>
+          <input name='y-offset' type='number' value='0'/>
+        </section>
+      </section>
+    </main>
+  <script>
+let size      = 32 ,
+    zoom      = -4 ,
+    f					= '|tan(x^p)+cos(y^p)|' ,
+    p       	= 2 ,
+    xOffset   = -64 ,
+    yOffset   = -64 ,
+    hueOpt    = 2,
+    hueOffset = 0,
+    satOpt    = 0,
+    satOffset = 100,
+    lumOpt    = 1,
+    lumOffset = 0,
+    opaOpt    = 0,
+    opaOffset = 100
+const doc     = document ,
+      canvas  = doc.getElementsByTagName('canvas')[0] ,
+      ctx     = canvas.getContext('2d') ,
+      inputs    = Array.from(doc.querySelectorAll('input,select')) ,
+      downloads = Array.from(doc.getElementsByClassName('download')) ,
+      norm360 = ( value ) => {
+        return Math.abs ( value % 360 )
+      },
+      norm100 = ( value ) => {
+        return Math.min ( ( Math.max ( value , 0 ) ) , 100 )
+      },
+      handler = ( event ) => {
+        let name  = event.target.name,
+            value = event.target.value,
+            tag   = event.target.tagName
+        if ( value ) {
+          switch ( name ) {
+            case 'resolution':
+              size = value = Math.max ( value , 1 )
+              break
+            case 'resolution-opt':
+              canvas.style.imageRendering = value
+              break
+            case 'background-opt':
+              canvas.style.background = value
+              break
+            case 'hue-opt':
+              hueOpt = value
+              break
+            case 'sat-opt':
+              satOpt = value
+              break
+            case 'lum-opt':
+              lumOpt = value
+              break
+            case 'opa-opt':
+              opaOpt = value
+              break
+            case 'zoom':
+              zoom = value = - Math.abs(value)
+              break
+            case 'x-offset':
+              xOffset = value - size/2
+              break
+            case 'y-offset':
+              yOffset = value - size/2
+              break
+            case 'hue-offset':
+              hueOffset = value = norm360 ( value )
+              break
+            case 'sat-offset':
+              satOffset = value = norm100 ( value )
+              break
+            case 'lum-offset':
+              lumOffset = value = norm100 ( value )
+              break
+            case 'opa-offset':
+              opaOffset = value = norm100 ( value )
+              break
+            case 'p':
+              p = value
+              break
+            case 'f':
+              f = value
+              break
+          }
+          if ( tag === 'INPUT' ) {
+            Array.from(
+              doc.getElementsByName( name )
+            ).forEach( ( input ) => {
+              input.value = value
+            })
+          }
+        }
+      } ,
+      graph   = ( x , y ) => {
+        ctx.fillRect( x , y , 1 , 1 )
+      } ,
+      funct   = ( x , y ) => {
+      	x = ( x + xOffset*size/128 ) / ( size / -zoom )
+      	y = ( y + yOffset*size/128 ) / ( size / -zoom )
+        if ( f === '|tan(x^p)+cos(y^p)|') {
+        	return (
+	          Math.abs ( Math.tan ( x**p ) + Math.cos ( y**p ) ) / 2
+	        )
+      	} else if ( f === '|tan(x/y)*(y-sin(xy)+cos(x/y)|x' ) {
+      		return (
+	          Math.abs (
+	            Math.tan ( x / y ) * ( y - Math.sin ( x , y ) ) + Math.cos ( x / y )
+	          ) * x
+	        )
+      	}
+      } ,
+      draw = () => {
+        canvas.width  = size
+        canvas.height = size
+        for ( let y = 0 ; y < size ; y ++ ) {
+          for ( let x = 0 ; x < size ; x ++ ) {
+            let opt = [ 0,
+                        funct ( x , y ),
+                        funct ( y , x ),
+                      ]
+            opt[3] = 1 - opt[1]
+            opt[4] = 1 - opt[2]
+            ctx.fillStyle = `
+              hsla(
+                ${ opt[hueOpt]*360 + hueOffset },
+                ${ opt[satOpt]*100 + satOffset }%,
+                ${ opt[lumOpt]*100 + lumOffset }%,
+                ${ opt[opaOpt] + opaOffset/100 }
+              )
+            `
+            graph ( x , y )
+          }
+        }
+      }
+inputs.forEach((element)=>{
+  element.addEventListener('input',handler)
+  element.addEventListener('change',draw)
+})
+downloads.forEach((element)=>{
+  element.addEventListener('click',()=>{
+    element.href = canvas.toDataURL(`img/${element.id}`).replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
+  } , false)
+})
+draw()
+    </script>
+  </body>
 </html>
