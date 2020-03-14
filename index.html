@@ -164,7 +164,7 @@ input[name=lum-offset][type=range],input[name=alpha-offset][type=range]{
 }
 
 #custom-function{
-	visibility:collapsed;
+	display:none;
 }
     </style>
   </head>
@@ -361,11 +361,13 @@ const doc     = document ,
               break
             case 'f':
             	if ( value === 'custom' || tag === 'INPUT' ) {
-            		doc.getElementById('custom-function').style.visibility='visible'
+            		doc.getElementById('custom-function').style.display='flex'
             	} else {
-            		doc.getElementById('custom-function').style.visibility='collapsed'
+            		doc.getElementById('custom-function').style.display='none'
             	}
-              f = value.replace(/(sin|cos|tan)/g,'Math.$1').replace(/\^/g,'**').replace(/\|/,'Math.abs(').replace(/\|/,')')
+            	if ( value !== 'custom' ) {
+	              f = value.replace(/(sin|cos|tan)/g,'Math.$1').replace(/\^/g,'**').replace(/\|/,'Math.abs(').replace(/\|/,')')
+            	}
               break
           }
           if ( name!=='f' && ( tag === 'SELECT' || tag === 'INPUT' ) ) {
