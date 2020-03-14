@@ -11,7 +11,12 @@
 html,body{
   margin:0;
 }
-      
+
+h2{
+	font-size:20px;
+	font-weight:normal;
+}
+ 
 body{
   background-image:linear-gradient(90deg,#fff8,#fff8 50%,#0008 50%,#0008),
                    linear-gradient(#fff,#fff 50%,#000 50%,#000);
@@ -158,6 +163,9 @@ input[name=lum-offset][type=range],input[name=opa-offset][type=range]{
   }
 }
 
+#custom-function{
+	visibility:collapse;
+}
     </style>
   </head>
   <body>
@@ -165,15 +173,20 @@ input[name=lum-offset][type=range],input[name=opa-offset][type=range]{
     <main>
       
       <h1>RippleWeave</h1>
+      <h2>A function grapher by Xing</h2>
       
       <section>
       	<section>
 	      	<label>Function</label>
-	        <select name='f'>
-	          <option value='|tan(x^p)+cos(y^p)|'>|cos(x^p)+sin(y^p)|</option>
-	          <option value='|tan(x/y)*(y-sin(xy)+cos(x/y)|x'>|tan(x/y)*(y-sin(xy)+cos(x/y)|x</option>
-	        </select>
-        </section>
+          <select name='f'>
+            <option value='|sin(x^2)+cos(y^2)|/2'>|sin(x^2)+cos(y^2)|/2</option>
+            <option value='|tan(x/y)*(y-sin(y*x))+cos(x/y)|*x'>|tan(x/y)*(y-sin(y*x))+cos(x/y)|*x</option>
+            <option value='|tan(x/y)*(y-sin(y*x))+cos(x/y)|/x'>|tan(x/y)*(y-sin(y*x))+cos(x/y)|/x</option>
+            <option value='|cos(x/y)-tan(x/y)*(y-sin(y*x))|*x'>|cos(x/y)-tan(x/y)*(y-sin(y*x))|*x</option>
+            <option value='custom'>custom</option>
+          </select>
+	        <input id='custom-function' name='f' type='text' value='|sin(x^2)+cos(y^2)|/2'/>
+         </section>
     	</section>
 
       <section>
@@ -193,24 +206,24 @@ input[name=lum-offset][type=range],input[name=opa-offset][type=range]{
         </section>
         <section>
           <label>Zoom</label>
-          <input name='zoom' type='number' value='-4'/>
-          <input name='zoom' type='range'  value='-4' min='-256' max='0' step='.1'/>
+          <input name='zoom' type='number' value='-10'/>
+          <input name='zoom' type='range'  value='-10' min='-256' max='0' step='.1'/>
         </section>
         <section>
           <label>Hue</label>
-          <select name='hue-opt' title='base function'>
+          <select name='hue-opt'>
             <option value='0'>0</option>
             <option value='1'>f(x,y)</option>
             <option value='2' selected>f(y,x)</option>
             <option value='3'>1-f(x,y)</option>
             <option value='4'>1-f(y,x)</option>
           </select>
-          <input name='hue-offset' title='offset' type='number' value='0'/>
-          <input name='hue-offset' title='offset' type='range'  value='0' min='0' max='360'/>
+          <input name='hue-offset' type='number' value='0'/>
+          <input name='hue-offset' type='range'  value='0' min='0' max='360'/>
         </section>
         <section>
           <label>Saturation</label>
-          <select name='sat-opt' title='base function'>
+          <select name='sat-opt'>
             <option value='0' selected>0</option>
             <option value='1'>f(x,y)</option>
             <option value='2'>f(y,x)</option>
@@ -221,8 +234,8 @@ input[name=lum-offset][type=range],input[name=opa-offset][type=range]{
           <input name='sat-offset' title='offset' type='range'  value='100' min='0' max='100'/>
         </section>
         <section>
-          <label>Brightness</label>
-          <select name='lum-opt' title='base function'>
+          <label>Luminosity</label>
+          <select name='lum-opt'>
             <option value='0'>0</option>
             <option value='1' selected>f(x,y)</option>
             <option value='2'>f(y,x)</option>
@@ -254,11 +267,6 @@ input[name=lum-offset][type=range],input[name=opa-offset][type=range]{
           </select>
         </section>
         <section>
-          <label>Exponent</label>
-          <input name='p' type='number' value='2'/>
-          <input name='p' type='range' value='2' min='-16' max='16'/>
-        </section>
-        <section>
           <label>Translate</label>
           <label>x</label>
           <input name='x-offset' type='range'  value='0' min='-128' max='128' orient='vertical'/>
@@ -271,9 +279,8 @@ input[name=lum-offset][type=range],input[name=opa-offset][type=range]{
     </main>
   <script>
 let size      = 32 ,
-    zoom      = -4 ,
-    f					= '|tan(x^p)+cos(y^p)|' ,
-    p       	= 2 ,
+    zoom      = -10 ,
+    f					= 'Math.abs(Math.sin(x**2)+Math.cos(y**2))/2',
     xOffset   = -64 ,
     yOffset   = -64 ,
     hueOpt    = 2,
@@ -343,14 +350,16 @@ const doc     = document ,
             case 'opa-offset':
               opaOffset = value = norm100 ( value )
               break
-            case 'p':
-              p = value
-              break
             case 'f':
-              f = value
+            	if ( value === 'custom' || tag === 'INPUT' ) {
+            		doc.getElementById('custom-function').style.visibility='visible'
+            	} else {
+            		doc.getElementById('custom-function').style.visibility='collapse'
+            	}
+              f = value.replace(/(sin|cos|tan)/g,'Math.$1').replace(/\^/g,'**').replace(/\|/,'Math.abs(').replace(/\|/,')')
               break
           }
-          if ( tag === 'INPUT' ) {
+          if ( name!=='f' && ( tag === 'SELECT' || tag === 'INPUT' ) ) {
             Array.from(
               doc.getElementsByName( name )
             ).forEach( ( input ) => {
@@ -365,17 +374,7 @@ const doc     = document ,
       funct   = ( x , y ) => {
       	x = ( x + xOffset*size/128 ) / ( size / -zoom )
       	y = ( y + yOffset*size/128 ) / ( size / -zoom )
-        if ( f === '|tan(x^p)+cos(y^p)|') {
-        	return (
-	          Math.abs ( Math.tan ( x**p ) + Math.cos ( y**p ) ) / 2
-	        )
-      	} else if ( f === '|tan(x/y)*(y-sin(xy)+cos(x/y)|x' ) {
-      		return (
-	          Math.abs (
-	            Math.tan ( x / y ) * ( y - Math.sin ( x , y ) ) + Math.cos ( x / y )
-	          ) * x
-	        )
-      	}
+      	return eval ( f )
       } ,
       draw = () => {
         canvas.width  = size
