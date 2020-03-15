@@ -120,37 +120,9 @@ input:focus:hover,.download:focus:hover{
 	border-color:#555
 }
 
-input[id=hue-offset][type=range]{
-	--sat:100%;
-	--lum:10%;
-	background-image:linear-gradient(
-		90deg,
-		hsl(0deg,var(--sat),var(--lum)),
-		hsl(120deg,var(--sat),var(--lum)),
-		hsl(240deg,var(--sat),var(--lum)),
-		hsl(360deg,var(--sat),var(--lum))
-	);
-}
-input[id=sat-offset][type=range]{
-	background-image:linear-gradient(
-		90deg,
-		hsl(0deg,0%,10%),
-		hsl(120deg,33.3%,12%),
-		hsl(240deg,66.7%,14%),
-		hsl(360deg,100%,16%)
-	);
-}
-input[id=lum-offset][type=range]{
-	background-image:linear-gradient(90deg,#000,#222);
-}
-
-
-@media(prefers-color-scheme:no-preference){
+@media(prefers-color-scheme:light){
 	main{
 		filter:invert(1)
-	}
-	input[id=lum-offset][type=range]{
-		background-image:linear-gradient(90deg,#222,#000);
 	}
 }
 
