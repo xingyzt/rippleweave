@@ -11,11 +11,11 @@
 html,body{
 	margin:0;
 }
- 
+
 *{
 	box-sizing:border-box;
 }
-			
+
 canvas{
 	position:fixed;
 	top:0;
@@ -25,7 +25,7 @@ canvas{
 	background:#fff;
 	image-rendering:pixelated
 }
-			
+
 main{
 	position:fixed;
 	overflow:scroll;
@@ -45,7 +45,7 @@ main{
 section>section{
 	display:inline-flex;
 }
-			
+
 ::selection{
 	background:#888;
 	color:#fff;
@@ -100,7 +100,7 @@ input,select,.download{
 select,.download{
 	cursor:pointer;
 }
-			
+
 input[type=range]{
 	-webkit-appearance:none;
 	background:#000;
@@ -119,7 +119,7 @@ input:focus,.download:focus{
 input:focus:hover,.download:focus:hover{
 	border-color:#555
 }
-			
+
 input[id=hue-offset][type=range]{
 	--sat:100%;
 	--lum:10%;
@@ -144,7 +144,7 @@ input[id=lum-offset][type=range]{
 	background-image:linear-gradient(90deg,#000,#222);
 }
 
-						
+
 @media(prefers-color-scheme:no-preference){
 	main{
 		filter:invert(1)
@@ -219,50 +219,28 @@ input[id=lum-offset][type=range]{
 			</section>
 		</main>
 	<script>
-const format_function = ( fn ) => {
-	return fn.replace(/f\((.*),(.*)\)/g,functions[0].replace(/a/g,'$1').replace(/b/g,'$2'))
-		.replace(/(x|y)(x|y)/g,'$1*$2')
-		.replace(/(x|y)(x|y)/g,'$1*$2')
-		.replace(/(abs|acos|acosh|asin|asinh|atan|atanh|atan2|cbrt|ceil|clz32|cos|cosh|exp|expm1|floor|fround|hypot|imul|log|log1p|log10|log2|max|min|pow|random|round|sign|sin|sinh|sqrt|tan|tanh|trunc|E|LN2|LN10|LOG2E|LOG10E|PI|SQRT1_2|SQRT2)/g,'Math.$1')
-		.replace(/\^/g,'**')
-		.replace(/\|/,'Math.abs(')
-		.replace(/\|/,')')
-}
+const painter = new Worker('painter.js')
 const presets = [[
 				'|cos(a^2)+sin(b^2)|/2',
-				'f(x,y)',
-				'100',
-				'f(y,x)'
+				'f(x,y)','100','f(y,x)'
 			],[
-				'|tan(x/y)*(y-sin(x))+cos(x/y)|*x',
-				'f(x,y)',
-				'100',
-				'f(y,x)'
+				'|tan(x/b)*(b-sin(a))+cos(a/b)|*a',
+				'f(x,y)','100','f(y,x)'
 			],[
-				'sin(x)^tan(x/y)',
-				'f(x,y)',
-				'100',
-				'f(y,x)'
+				'sin(a)^tan(a/b)',
+				'f(x,y)','100','f(y,x)'
 			],[
-				'|tan(x/y)*(y-sin(y*x))+cos(x/y)|*x',
-	    	'f(x,y)',
-	    	'100',
-	    	'f(y,x)'
+				'|tan(a/b)*(b-sin(b*a))+cos(a/b)|*a',
+				'f(x,y)','100','f(y,x)'
 			],[
-				'atan2(sin(y/x),cos(y/x))',
-	    	'f(x,y)',
-	    	'100',
-	    	'f(y,x)'
+				'atan2(sin(b/a),cos(b/a))',
+				'f(x,y)','100','f(y,x)'
 			],[
-				'|cos(x/y)-tan(x/y)*(y-sin(y*x))|*x',
-				'f(x,y)',
-				'100',
-				'f(y,x)'
+				'|cos(a/b)-tan(a/b)*(b-sin(b*a))|*a',
+				'f(x,y)','100','f(y,x)'
 			],[
-				'tan(sin(x)/y)',
-				'f(x,y)',
-				'100',
-				'f(y,x)'
+				'tan(sin(a)/b)',
+				'f(x,y)','100','f(y,x)'
 		]]
 let width = height = 64
 let mode = 'hsl'
@@ -271,7 +249,7 @@ const canvas_element = document.getElementById('ripple-weave')
 const canvas_context = canvas_element.getContext('2d')
 const inputs = [...document.querySelectorAll('input,select')]
 const downloads = [...document.getElementsByClassName('download')]
-const handler = event => {
+function handler ( event ) {
 	const val = event.target.value
 	if ( val ) {
 		const id = event.target.id
@@ -280,7 +258,7 @@ const handler = event => {
 				width = value = Math.max ( 1 , val )
 				break
 			case 'height':
-				height = val = Math.max ( 1 , val )
+				height = value = Math.max ( 1 , val )
 				break
 			case 'mode':
 				mode = val
@@ -296,6 +274,10 @@ const handler = event => {
 				break
 			case 'presets':
 				functions = presets [ val ]
+				document.getElementById('f0').value = functions[0]
+				document.getElementById('f1').value = functions[1]
+				document.getElementById('f2').value = functions[2]
+				document.getElementById('f3').value = functions[3]
 				break
 			case 'f0':
 				functions[0] = val
@@ -312,40 +294,24 @@ const handler = event => {
 		}
 	}
 }
-const draw = () => {
+function request_paint () {
+	painter.postMessage([width,height,mode,functions])
+}
+painter.onmessage = function ( image ) {
 	canvas_element.width = width
 	canvas_element.height = height
-	const formatted_functions = [
-		format_function(functions[1]),
-		format_function(functions[2]),
-		format_function(functions[3])
-	]
-	for ( let x = 0 ; x < width ; x ++ ) {
-		for ( let y = 0 ; y < height ; y ++ ) {
-			const results = [
-				eval(formatted_functions[0]),
-				eval(formatted_functions[1]),
-				eval(formatted_functions[2])
-			]
-			if ( mode === 'hsl' ) {
-				canvas_context.fillStyle = `hsl(${results[0]*360}deg,${results[1]*100}%,${results[2]*100}%)`
-			} else {
-				canvas_context.fillStyle = `rgb(${results[0]*255},${results[1]*255},${results[2]*255})`
-			}
-			canvas_context.fillRect( x , y , 1 , 1 )
-		}
-	}
+	canvas_context.putImageData(image.data)
 }
 inputs.forEach(input=>{
 	input.addEventListener('input',handler)
-	input.addEventListener('change',draw)
+	input.addEventListener('change',request_paint)
 })
 downloads.forEach(link=>{
 	link.addEventListener('click',()=>{
-		link.href = canvas_image.toDataURL(`img/${element.id}`).replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
+		link.href = canvas_element.toDataURL(`img/${link.id}`).replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
 	},false)
 })
-draw()
+
 		</script>
 	</body>
 </html>
