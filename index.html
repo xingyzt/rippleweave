@@ -219,18 +219,18 @@ input[name=lum-offset][type=range]{
 			</section>
 		</main>
 	<script>
-clamp = ( min , val , max ) => Math.max ( min, Math.min ( val , max ) )
-circle = val => Math.abs ( val % 360 )
-format_function = ( ch ) => ch.replace(/f\(x,x\)/g,functions.f.replace(/(a|b)/g,'x'))
-															.replace(/f\(x,y\)/g,functions.f.replace(/a/g,'x').replace(/b/g,'y'))
-															.replace(/f\(y,y\)/g,functions.f.replace(/(a|b)/g,'y'))
-															.replace(/f\(y,x\)/g,functions.f.replace(/a/g,'y').replace(/b/g,'x'))
-															.replace(/(x|y)(x|y)/g,'$1*$2')
-															.replace(/(x|y)(x|y)/g,'$1*$2')
-															.replace(/(abs|acos|acosh|asin|asinh|atan|atanh|atan2|cbrt|ceil|clz32|cos|cosh|exp|expm1|floor|fround|hypot|imul|log|log1p|log10|log2|max|min|pow|random|round|sign|sin|sinh|sqrt|tan|tanh|trunc|E|LN2|LN10|LOG2E|LOG10E|PI|SQRT1_2|SQRT2)/g,'Math.$1')
-															.replace(/\^/g,'**')
-															.replace(/\|/,'Math.abs(')
-															.replace(/\|/,')')
+const format_function = ( fn ) => {
+	return fn.replace(/f\(x,x\)/g,functions[0].replace(/(a|b)/g,'x'))
+					.replace(/f\(x,y\)/g,functions[0].replace(/a/g,'x').replace(/b/g,'y'))
+					.replace(/f\(y,y\)/g,functions[0].replace(/(a|b)/g,'y'))
+					.replace(/f\(y,x\)/g,functions[0].replace(/a/g,'y').replace(/b/g,'x'))
+					.replace(/(x|y)(x|y)/g,'$1*$2')
+					.replace(/(x|y)(x|y)/g,'$1*$2')
+					.replace(/(abs|acos|acosh|asin|asinh|atan|atanh|atan2|cbrt|ceil|clz32|cos|cosh|exp|expm1|floor|fround|hypot|imul|log|log1p|log10|log2|max|min|pow|random|round|sign|sin|sinh|sqrt|tan|tanh|trunc|E|LN2|LN10|LOG2E|LOG10E|PI|SQRT1_2|SQRT2)/g,'Math.$1')
+					.replace(/\^/g,'**')
+					.replace(/\|/,'Math.abs(')
+					.replace(/\|/,')')
+}
 const presets = [[
 				'|cos(a^2)+sin(b^2)|/2',
 				'f(x,y)',
@@ -269,61 +269,75 @@ const presets = [[
 		]]
 let width = height = 64
 let mode = 'hsl'
-let functions = format_function(presets[0])
+let functions = presets[0]
 const canvas_element = document.getElementById('ripple-weave')
 const canvas_context = canvas_element.getContext('2d')
 const inputs = [...document.querySelectorAll('input,select')]
 const downloads = [...document.getElementsByClassName('download')]
 const handler = event => {
-				const val = event.target.value
-				if ( val ) {
-					const name = event.target.name
-					switch ( name ) {
-						case 'width':
-							width = value = Math.max ( 1 , val )
-							break
-						case 'height':
-							height = val = Math.max ( 1 , val )
-							break
-						case 'mode':
-							mode = val
-							break
-						case 'presets':
-							functions = presets [ val ]
-							break
-						case 'f0':
-							functions[0] = val
-							break
-						case 'f1':
-							functions[1] = format_function(val)
-							break
-						case 'f2':
-							functions[2] = format_function(val)
-							break
-						case 'f3':
-							functions[3] = format_function(val)
-						break
-					}
-				}
-			} ,
-			draw = () => {
-				canvas.width = width
-				canvas.height = height
-				for ( let x = 0 ; x < width ; x ++ ) {
-					for ( let y = 0 ; y < height ; y ++ ) {
-						canvas_context.fillStyle = ( mode === 'hsl' ) ? `hsl(${functions[1]*360}deg,${functions[2]*100}%,${functions[2]*100}%)` : `rgb(${functions[1]*255},${functions[2]*255},${functions[2]*255})`
-						canvas_context.fillRect( x , y , 1 , 1 )
-					}
-				}
+	const val = event.target.value
+	if ( val ) {
+		const name = event.target.name
+		switch ( name ) {
+			case 'width':
+				width = value = Math.max ( 1 , val )
+				break
+			case 'height':
+				height = val = Math.max ( 1 , val )
+				break
+			case 'mode':
+				mode = val
+				break
+			case 'presets':
+				functions = presets [ val ]
+				break
+			case 'f0':
+				functions[0] = val
+				break
+			case 'f1':
+				functions[1] = val
+				break
+			case 'f2':
+				functions[2] = val
+				break
+			case 'f3':
+				functions[3] = val
+			break
+		}
+	}
+}
+const draw = () => {
+	canvas_element.width = width
+	canvas_element.height = height
+	const formatted_functions = [
+		format_function(functions[1]),
+		format_function(functions[2]),
+		format_function(functions[3])
+	]
+	for ( let x = 0 ; x < width ; x ++ ) {
+		for ( let y = 0 ; y < height ; y ++ ) {
+			const results = [
+				eval(formatted_functions[0]),
+				eval(formatted_functions[1]),
+				eval(formatted_functions[2])
+			]
+			if ( mode === 'hsl' ) {
+				canvas_context.fillStyle = `hsl(${results[0]*360}deg,${results[1]*100}%,${results[2]*100}%)`
+			} else {
+				canvas_context.fillStyle = `rgb(${results[0]*255},${results[1]*255},${results[2]*255})`
 			}
-inputs.forEach((element)=>{
-	element.addEventListener('input',handler)
-	element.addEventListener('change',draw)
+			canvas_context.fillRect( x , y , 1 , 1 )
+		}
+	}
+}
+inputs.forEach(input=>{
+	input.addEventListener('input',handler)
+	input.addEventListener('change',draw)
 })
-downloads.forEach((element)=>{
-	element.addEventListener('click',()=>{
-		element.href = canvas_image.toDataURL(`img/${element.id}`).replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
-	} , false)
+downloads.forEach(link=>{
+	link.addEventListener('click',()=>{
+		link.href = canvas_image.toDataURL(`img/${element.id}`).replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
+	},false)
 })
 draw()
 		</script>
