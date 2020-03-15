@@ -175,10 +175,11 @@ input[name=lum-offset][type=range],input[name=alpha-offset][type=range]{
           <select name='f'>
             <option value='custom'>custom</option>
             <option value='|sin(x^2)+cos(y^2)|/2' selected>|sin(x^2)+cos(y^2)|/2</option>
-            <option value='|sin(x^2)+cos(y^2)|/2'>|sin(x^2)-cos(y^2)|/2</option>
+            <option value='|sin(x^2)-cos(y^2)|/2'>|sin(x^2)-cos(y^2)|/2</option>
             <option value='|tan(x/y)*(y-sin(x))+cos(x/y)|*x'>|tan(x/y)*(y-sin(x))+cos(x/y)|*x</option>
             <option value='sin(x)^tan(x/y)'>sin(x)^tan(x/y)</option>
             <option value='|tan(x/y)*(y-sin(y*x))+cos(x/y)|*x'>|tan(x/y)*(y-sin(y*x))+cos(x/y)|*x</option>
+            <option value='atan2(sin(y/x),cos(y/x))'>atan2(sin(y/x),cos(y/x))</option>
             <option value='|cos(x/y)-tan(x/y)*(y-sin(y*x))|*x'>|cos(x/y)-tan(x/y)*(y-sin(y*x))|*x</option>
             <option value='tan(sin(x)/y)'>tan(sin(x)/y)</option>
           </select>
@@ -286,6 +287,7 @@ input[name=lum-offset][type=range],input[name=alpha-offset][type=range]{
 let size      = 32 ,
     zoom      = -10 ,
     f					= 'Math.abs(Math.sin(x**2)+Math.cos(y**2))/2',
+    fh				= '|sin(x^2)+cos(y^2)|/2',
     xOffset   = -64 ,
     yOffset   = -64 ,
     hueOpt    = 2,
@@ -362,7 +364,8 @@ const doc     = document ,
             		doc.getElementById('custom-function').style.display='none'
             	}
             	if ( value !== 'custom' ) {
-	              f = value
+            		fh = value
+	              f = fh
 	            	.replace(/(x|y)(x|y)/g,'$1*$2')
 	            	.replace(/(x|y)(x|y)/g,'$1*$2')
 	              .replace(/(abs|acos|acosh|asin|asinh|atan|atanh|atan2|cbrt|ceil|clz32|cos|cosh|exp|expm1|floor|fround|hypot|imul|log|log1p|log10|log2|max|min|pow|random|round|sign|sin|sinh|sqrt|tan|tanh|trunc|E|LN2|LN10|LOG2E|LOG10E|PI|SQRT1_2|SQRT2)/g,'Math.$1')
@@ -418,6 +421,7 @@ inputs.forEach((element)=>{
 })
 downloads.forEach((element)=>{
   element.addEventListener('click',()=>{
+  	element.download=fh.replace(/\//g,'÷').replace(/\*/g,'×').replace(/\-/g,'−')+'.png'
     element.href = canvas.toDataURL(`img/${element.id}`).replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
   } , false)
 })
