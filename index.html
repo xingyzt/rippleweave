@@ -2,11 +2,11 @@
 <html>
 	<head>
 		<title>RippleWeave</title>
-		<meta utf='8'/>
-		<meta name='author'			 content='Xing Liu'/>
-		<meta name='description'	content='2 spatial + 1 color dimension'/>
-		<meta name='keywords'		 content='graph,math,wallpaper'/>
-		<link rel='shortcut icon' type='image/png' href='fav.png'/>
+		<meta utf='8'>
+		<meta id='author'			 content='Xing Liu'>
+		<meta id='description'	content='2 spatial + 1 color dimension'>
+		<meta id='keywords'		 content='graph,math,wallpaper'>
+		<link rel='shortcut icon' type='image/png' href='fav.png'>
 		<style>
 html,body{
 	margin:0;
@@ -120,7 +120,7 @@ input:focus:hover,.download:focus:hover{
 	border-color:#555
 }
 			
-input[name=hue-offset][type=range]{
+input[id=hue-offset][type=range]{
 	--sat:100%;
 	--lum:10%;
 	background-image:linear-gradient(
@@ -131,7 +131,7 @@ input[name=hue-offset][type=range]{
 		hsl(360deg,var(--sat),var(--lum))
 	);
 }
-input[name=sat-offset][type=range]{
+input[id=sat-offset][type=range]{
 	background-image:linear-gradient(
 		90deg,
 		hsl(0deg,0%,10%),
@@ -140,7 +140,7 @@ input[name=sat-offset][type=range]{
 		hsl(360deg,100%,16%)
 	);
 }
-input[name=lum-offset][type=range]{
+input[id=lum-offset][type=range]{
 	background-image:linear-gradient(90deg,#000,#222);
 }
 
@@ -149,7 +149,7 @@ input[name=lum-offset][type=range]{
 	main{
 		filter:invert(1)
 	}
-	input[name=lum-offset][type=range]{
+	input[id=lum-offset][type=range]{
 		background-image:linear-gradient(90deg,#222,#000);
 	}
 }
@@ -167,7 +167,7 @@ input[name=lum-offset][type=range]{
 				<h2>A function grapher by Xing</h2>
 				<section>
 					<label>presets</label>
-					<select name='presets'>
+					<select id='presets'>
 						<option value='0' selected>Original</option>
 						<option value='1'>Extra Crispy</option>
 						<option value='2'>Glitcher</option>
@@ -182,31 +182,31 @@ input[name=lum-offset][type=range]{
 				<h2>functions</h2>
 				<section>
 					<label>f(a,b)</label>
-					<input name='f0' type='text' value='|sin(a^2)+cos(b^2)|/2'/>
+					<input id='f0' type='text' value='|sin(a^2)+cos(b^2)|/2'>
 				</section>
 				<section>
-					<label>hue</label>
-					<input name='f1' type='text' value='f(x,y)'/>
+					<label id='c1'>hue</label>
+					<input id='f1' type='text' value='f(x,y)'>
 				</section>
 				<section>
-					<label>saturation</label>
-					<input name='f2' type='text' value='100'/>
+					<label id='c2'>saturation</label>
+					<input id='f2' type='text' value='100'>
 				</section>
 				<section>
-					<label>luminosity</label>
-					<input name='f3' type='text' value='f(y,x)'/>
+					<label id='c3'>luminosity</label>
+					<input id='f3' type='text' value='f(y,x)'>
 				</section>
 			</section>
 			<section>
 				<h2>render</h2>
 				<section>
 					<label>size</label>
-					<input name='width' type='number' value='64'/>
-					<input name='height' type='number' value='64'/>
+					<input id='width' type='number' value='64'>
+					<input id='height' type='number' value='64'>
 				</section>
 				<section>
 					<label>channels</label>
-					<select>
+					<select id='mode'>
 						<option value='hsl'>hue/saturation/luminosity</option>
 						<option value='rgb'>red/green/blue</option>
 					</select>
@@ -220,16 +220,13 @@ input[name=lum-offset][type=range]{
 		</main>
 	<script>
 const format_function = ( fn ) => {
-	return fn.replace(/f\(x,x\)/g,functions[0].replace(/(a|b)/g,'x'))
-					.replace(/f\(x,y\)/g,functions[0].replace(/a/g,'x').replace(/b/g,'y'))
-					.replace(/f\(y,y\)/g,functions[0].replace(/(a|b)/g,'y'))
-					.replace(/f\(y,x\)/g,functions[0].replace(/a/g,'y').replace(/b/g,'x'))
-					.replace(/(x|y)(x|y)/g,'$1*$2')
-					.replace(/(x|y)(x|y)/g,'$1*$2')
-					.replace(/(abs|acos|acosh|asin|asinh|atan|atanh|atan2|cbrt|ceil|clz32|cos|cosh|exp|expm1|floor|fround|hypot|imul|log|log1p|log10|log2|max|min|pow|random|round|sign|sin|sinh|sqrt|tan|tanh|trunc|E|LN2|LN10|LOG2E|LOG10E|PI|SQRT1_2|SQRT2)/g,'Math.$1')
-					.replace(/\^/g,'**')
-					.replace(/\|/,'Math.abs(')
-					.replace(/\|/,')')
+	return fn.replace(/f\((.*),(.*)\)/g,functions[0].replace(/a/g,'$1').replace(/b/g,'$2'))
+		.replace(/(x|y)(x|y)/g,'$1*$2')
+		.replace(/(x|y)(x|y)/g,'$1*$2')
+		.replace(/(abs|acos|acosh|asin|asinh|atan|atanh|atan2|cbrt|ceil|clz32|cos|cosh|exp|expm1|floor|fround|hypot|imul|log|log1p|log10|log2|max|min|pow|random|round|sign|sin|sinh|sqrt|tan|tanh|trunc|E|LN2|LN10|LOG2E|LOG10E|PI|SQRT1_2|SQRT2)/g,'Math.$1')
+		.replace(/\^/g,'**')
+		.replace(/\|/,'Math.abs(')
+		.replace(/\|/,')')
 }
 const presets = [[
 				'|cos(a^2)+sin(b^2)|/2',
@@ -277,8 +274,8 @@ const downloads = [...document.getElementsByClassName('download')]
 const handler = event => {
 	const val = event.target.value
 	if ( val ) {
-		const name = event.target.name
-		switch ( name ) {
+		const id = event.target.id
+		switch ( id ) {
 			case 'width':
 				width = value = Math.max ( 1 , val )
 				break
@@ -287,6 +284,15 @@ const handler = event => {
 				break
 			case 'mode':
 				mode = val
+				if ( val === 'hsl' ) {
+					document.getElementById('c1').innerText = 'hue'
+					document.getElementById('c2').innerText = 'saturation'
+					document.getElementById('c3').innerText = 'luminosity'
+				} else {
+					document.getElementById('c1').innerText = 'red'
+					document.getElementById('c2').innerText = 'green'
+					document.getElementById('c3').innerText = 'blue'
+				}
 				break
 			case 'presets':
 				functions = presets [ val ]
