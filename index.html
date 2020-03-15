@@ -1,357 +1,331 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>RippleWeave</title>
-    <meta utf='8'/>
-    <meta name='author'       content='Xing Liu'/>
-    <meta name='description'  content='2 spatial + 1 color dimension'/>
-    <meta name='keywords'     content='graph,math,wallpaper'/>
-    <link rel='shortcut icon' type='image/png' href='fav.png'/>
-    <style>
+	<head>
+		<title>RippleWeave</title>
+		<meta utf='8'/>
+		<meta name='author'			 content='Xing Liu'/>
+		<meta name='description'	content='2 spatial + 1 color dimension'/>
+		<meta name='keywords'		 content='graph,math,wallpaper'/>
+		<link rel='shortcut icon' type='image/png' href='fav.png'/>
+		<style>
 html,body{
-  margin:0;
+	margin:0;
 }
  
 *{
-  box-sizing:border-box;
+	box-sizing:border-box;
 }
-      
+			
 canvas{
-  position:fixed;
-  top:0;
-  right:0;
-  width:100vmin;
-  height:100vmin;
-  background:#fff;
-  image-rendering:pixelated
+	position:fixed;
+	top:0;
+	right:0;
+	width:100vmin;
+	height:100vmin;
+	background:#fff;
+	image-rendering:pixelated
 }
-      
+			
 main{
-  position:fixed;
-  overflow:scroll;
-  display:block;
-  left:0;
-  width:calc(100vw - 100vmin);
-  height:100vh;
-  min-width:20rem;
-  background:#111;
-  font-family:Monospace,Monospace;
-  color:#fff;
-  padding:1rem 1rem 0 .6rem;
-  text-align:center;
-  text-align-last:center;
+	position:fixed;
+	overflow:scroll;
+	display:block;
+	left:0;
+	width:calc(100vw - 100vmin);
+	height:100vh;
+	min-width:20rem;
+	background:#111;
+	font-family:Monospace,Monospace;
+	color:#fff;
+	padding:1rem 1rem 0 .6rem;
+	text-align:center;
+	text-align-last:center;
 }
 
 section>section{
-  display:inline-flex;
+	display:inline-flex;
 }
-      
+			
 ::selection{
-  background:#888;
-  color:#fff;
+	background:#888;
+	color:#fff;
 }
 
 :focus{
-  outline:none;
+	outline:none;
 }
 
 .download{
-  text-decoration:none;
+	text-decoration:none;
 }
 
 section>*{
-  width:100%;
+	width:100%;
 	margin:.2rem 0;
 }
 
 section>section>*{
-  padding:.2rem;
-  font-size:inherit;
-  font-family:inherit;
-  color:inherit;
-  height:2rem;
-  margin:0 .4rem;
-  border-width:.2rem;
-  border-style:solid;
+	padding:.2rem;
+	font-size:inherit;
+	font-family:inherit;
+	color:inherit;
+	height:2rem;
+	margin:0 .4rem;
+	border-width:.2rem;
+	border-style:solid;
 }
 section>section>*+*{
-  margin-left:0;
+	margin-left:0;
 }
 
 h2{
 	font-size:1rem;
 	font-weight:normal;
 	margin-top:1rem;
-  padding:.2rem;
-  color:#888;
+	padding:.2rem;
+	color:#888;
 	border:solid .2rem #222;
 }
 
 label{
 	flex:0 1 8rem;
-  background:#222;
-  border-color:#000;
+	background:#222;
+	border-color:#000;
 }
 input,select,.download{
 	flex:1 1 8rem;
-  background:#000;
-  border-color:#222;
+	background:#000;
+	border-color:#222;
 }
 select,.download{
-  cursor:pointer;
+	cursor:pointer;
 }
-      
+			
 input[type=range]{
-  -webkit-appearance:none;
-  background:#000;
-  cursor:ew-resize;
-  background-size:calc(100% - .5rem) calc(100% - .5rem);
-  background-position:center;
-  background-repeat:no-repeat;
+	-webkit-appearance:none;
+	background:#000;
+	cursor:ew-resize;
+	background-size:calc(100% - .5rem) calc(100% - .5rem);
+	background-position:center;
+	background-repeat:no-repeat;
 }
 input:hover:not(:focus),.download:hover:not(:focus){
-  background:#111;
-  border-color:#333
+	background:#111;
+	border-color:#333
 }
 input:focus,.download:focus{
-  border-color:#444
+	border-color:#444
 }
 input:focus:hover,.download:focus:hover{
-  border-color:#555
+	border-color:#555
 }
-      
+			
 input[name=hue-offset][type=range]{
-  --sat:100%;
-  --lum:10%;
-  background-image:linear-gradient(
-    90deg,
-    hsl(0deg,var(--sat),var(--lum)),
-    hsl(120deg,var(--sat),var(--lum)),
-    hsl(240deg,var(--sat),var(--lum)),
-    hsl(360deg,var(--sat),var(--lum))
-  );
+	--sat:100%;
+	--lum:10%;
+	background-image:linear-gradient(
+		90deg,
+		hsl(0deg,var(--sat),var(--lum)),
+		hsl(120deg,var(--sat),var(--lum)),
+		hsl(240deg,var(--sat),var(--lum)),
+		hsl(360deg,var(--sat),var(--lum))
+	);
 }
 input[name=sat-offset][type=range]{
-  background-image:linear-gradient(
-    90deg,
-    hsl(0deg,0%,10%),
-    hsl(120deg,33.3%,12%),
-    hsl(240deg,66.7%,14%),
-    hsl(360deg,100%,16%)
-  );
+	background-image:linear-gradient(
+		90deg,
+		hsl(0deg,0%,10%),
+		hsl(120deg,33.3%,12%),
+		hsl(240deg,66.7%,14%),
+		hsl(360deg,100%,16%)
+	);
 }
 input[name=lum-offset][type=range]{
-  background-image:linear-gradient(90deg,#000,#222);
+	background-image:linear-gradient(90deg,#000,#222);
 }
 
-            
+						
 @media(prefers-color-scheme:no-preference){
-  main{
-    filter:invert(1)
-  }
-  input[name=lum-offset][type=range]{
-    background-image:linear-gradient(90deg,#222,#000);
-  }
+	main{
+		filter:invert(1)
+	}
+	input[name=lum-offset][type=range]{
+		background-image:linear-gradient(90deg,#222,#000);
+	}
 }
 
 #custom-function-option{
 	display:none;
 }
-    </style>
-  </head>
-  <body>
-    <canvas></canvas>
-    <main>
-      
-      <h1>RippleWeave</h1>
-      
-      <section>
-	      <h2>A function grapher by Xing</h2>
-      	<section>
-	      	<label>Presets</label>
-          <select name='presets'>
-            <option value='0' selected>Original</option>
-            <option value='1'>Extra Crispy</option>
-            <option value='2'>Glitcher</option>
-            <option value='3'>Nubbin</option>
-            <option value='4'>Atanto</option>
-            <option value='5'>Flare</option>
-            <option value='6'>Night</option>
-          </select>
-         </section>
-    	</section>
-      <section>
-      	<h2>Functions</h2>
-        <section>
-          <label>f(x,y)</label>
-	        <input name='function-1' type='text' value='|sin(x^2)+cos(y^2)|/2'/>
-        </section>
-        <section>
-          <label>g(x,y)</label>
-	        <input name='function-2' type='text' value='0'/>
-        </section>
-        <section>
-          <label>h(x,y)</label>
-	        <input name='function-3' type='text' value='0'/>
-        </section>
-      </section>
-      <section>
-      	<h2>Channels</h2>
-      	<section>
-      		<label>Mode</label>
-      		<select>
-      			<option value='hsl'>Hue/Saturation/Luminosity</option>
-      			<option value='rgb'>Red/Green/Blue</option>
-      		</select>
-      	</section>
-        <section>
-        	<label>Hue</label>
-	        <input name='channel-1' type='text' value='f(x,y)'/>
-        </section>
-        <section>
-        	<label>Saturation</label>
-	        <input name='channel-2' type='text' value='-f(x,y)'/>
-        </section>
-        <section>
-        	<label>Luminosity</label>
-	        <input name='channel-3' type='text' value='50'/>
-        </section>
-      </section>
-      <section>
-      	<h2>Render</h2>
-        <section>
-          <label>Download</label>
-          <a class='download image' id='png' download='ripple-weave.png' href='#'>PNG</a>
-          <a class='download image' id='jpg' download='ripple-weave.jpg' href='#'>JPG</a>
-        </section>
-        <section>
-          <label>Resolution</label>
-          <input name='resolution' type='number' value='32'/>
-          <input name='resolution' type='range'  value='32' min='1' max='1024'/>
-        </section>
-      </section>
-    </main>
-  <script>
+		</style>
+	</head>
+	<body>
+		<canvas id='ripple-weave'></canvas>
+		<main>
+			<h1>RippleWeave</h1>
+			<section>
+				<h2>A function grapher by Xing</h2>
+				<section>
+					<label>presets</label>
+					<select name='presets'>
+						<option value='0' selected>Original</option>
+						<option value='1'>Extra Crispy</option>
+						<option value='2'>Glitcher</option>
+						<option value='3'>Nubbin</option>
+						<option value='4'>Atanto</option>
+						<option value='5'>Flare</option>
+						<option value='6'>Night</option>
+					</select>
+				 </section>
+			</section>
+			<section>
+				<h2>functions</h2>
+				<section>
+					<label>f(a,b)</label>
+					<input name='f0' type='text' value='|sin(a^2)+cos(b^2)|/2'/>
+				</section>
+				<section>
+					<label>hue</label>
+					<input name='f1' type='text' value='f(x,y)'/>
+				</section>
+				<section>
+					<label>saturation</label>
+					<input name='f2' type='text' value='100'/>
+				</section>
+				<section>
+					<label>luminosity</label>
+					<input name='f3' type='text' value='f(y,x)'/>
+				</section>
+			</section>
+			<section>
+				<h2>render</h2>
+				<section>
+					<label>size</label>
+					<input name='width' type='number' value='64'/>
+					<input name='height' type='number' value='64'/>
+				</section>
+				<section>
+					<label>channels</label>
+					<select>
+						<option value='hsl'>hue/saturation/luminosity</option>
+						<option value='rgb'>red/green/blue</option>
+					</select>
+				</section>
+				<section>
+					<label>download</label>
+					<a class='download image' id='png' download='ripple-weave.png' href='#'>PNG</a>
+					<a class='download image' id='jpg' download='ripple-weave.jpg' href='#'>JPG</a>
+				</section>
+			</section>
+		</main>
+	<script>
 clamp = ( min , val , max ) => Math.max ( min, Math.min ( val , max ) )
-format_fn = ( fn ) => fn.replace(/(x|y)(x|y)/g,'$1*$2')
-												.replace(/(x|y)(x|y)/g,'$1*$2')
-												.replace(/(abs|acos|acosh|asin|asinh|atan|atanh|atan2|cbrt|ceil|clz32|cos|cosh|exp|expm1|floor|fround|hypot|imul|log|log1p|log10|log2|max|min|pow|random|round|sign|sin|sinh|sqrt|tan|tanh|trunc|E|LN2|LN10|LOG2E|LOG10E|PI|SQRT1_2|SQRT2)/g,'Math.$1')
-												.replace(/\^/g,'**')
-												.replace(/\|/,'Math.abs(')
-												.replace(/\|/,')')
-let canvas_size = 32 ,
-		mode = 'hsl',
-    fn_f	= format('|sin(x^2)+cos(y^2)|/2'),
-    fn_g = fn_h = 0,
-    ch_1 = 'f(x,y)',
-    ch_2 = '100',
-    ch_3 = 'f(y,x)'
-const doc     = document ,
-      canvas  = doc.getElementsByTagName('canvas')[0] ,
-      ctx     = canvas.getContext('2d') ,
-      inputs    = Array.from(doc.querySelectorAll('input,select')) ,
-      downloads = Array.from(doc.getElementsByClassName('download')) ,
-      norm360 = ( value ) => {
-        return Math.abs ( value % 360 )
-      },
-      handler = ( event ) => {
-        let name  = event.target.name,
-            value = event.target.value,
-            tag   = event.target.tagName
-        if ( value ) {
-          switch ( name ) {
-            case 'resolution':
-              canvas_size = value = Math.max ( value , 1 )
-              break
-            case 'resolution-function-options':
-              canvas.style.imageRendering = value
-              break
-            case 'hue-function-options':
-              hue_function_option = value
-              break
-            case 'sat-function-options':
-              sat_function_option = value
-              break
-            case 'lum-function-options':
-              lum_function_option = value
-              break
-            case 'zoom':
-              zoom = value = - Math.abs(value)
-              break
-            case 'graph-x-offset':
-              graph_x_offset = value
-              break
-            case 'graph-y-offset':
-              graph_y_offset = value
-              break
-            case 'hue-offset':
-              hue_offset = value = norm360 ( value )
-              break
-            case 'sat-offset':
-              sat_offset = value = Math.clamp ( 0 , value , 100 )
-              break
-            case 'lum-offset':
-              lum_offset = value = Math.clamp ( 0 , value , 100 )
-              break
-            case 'f':
-            	if ( value === 'custom' || tag === 'INPUT' ) {
-            		doc.getElementById('custom-function-option').style.display='flex'
-            	} else {
-            		doc.getElementById('custom-function-option').style.display='none'
-            	}
-            	if ( value !== 'custom' ) {
-            		f_input_string = value
-	              f_formatted_string = f_input_string
-	            	
-            	}
-              break
-          }
-          if ( ( name!=='f' && ( tag === 'SELECT' || tag === 'INPUT' ) ) || ( name === 'f' && tag ==='SELECT' && value !=='custom' ) ) {
-            Array.from(
-              doc.getElementsByName( name )
-            ).forEach( ( input ) => {
-              input.value = value
-            })
-          }
-        }
-      } ,
-      f = ( x , y ) => {
-      	return eval ( f_formatted_string )
-      } ,
-      draw = () => {
-        canvas.width = canvas.height = canvas_size
-        for ( let canvas_x = 0 ; canvas_x < canvas_size ; canvas_x ++ ) {
-	        for ( let canvas_y = 0 ; canvas_y < canvas_size ; canvas_y ++ ) {
-          	graph_x = canvas_x / canvas_size * graph_zoom + graph_translate_x
-      			graph_y = canvas_y / canvas_size * graph_zoom + graph_translate_y
-            let functions = [ 0,
-                        f ( graph_x , graph_y ),
-                        f ( graph_y , graph_x ),
-                      ]
-            functions[3] = 1 - functions[1]
-            functions[4] = 1 - functions[2]
-            ctx.fillStyle = `
-              hsl(
-                ${ functions[hue_function_option]*360 + hue_offset },
-                ${ functions[sat_function_option]*100 + sat_offset }%,
-                ${ functions[lum_function_option_option]*100 + lum_offset }%
-              )
-            `
-            ctx.fillRect( x , y , 1 , 1 )
-          }
-        }
-      }
+circle = val => Math.abs ( val % 360 )
+format_function = ( ch ) => ch.replace(/f\(x,x\)/g,functions.f.replace(/(a|b)/g,'x'))
+															.replace(/f\(x,y\)/g,functions.f.replace(/a/g,'x').replace(/b/g,'y'))
+															.replace(/f\(y,y\)/g,functions.f.replace(/(a|b)/g,'y'))
+															.replace(/f\(y,x\)/g,functions.f.replace(/a/g,'y').replace(/b/g,'x'))
+															.replace(/(x|y)(x|y)/g,'$1*$2')
+															.replace(/(x|y)(x|y)/g,'$1*$2')
+															.replace(/(abs|acos|acosh|asin|asinh|atan|atanh|atan2|cbrt|ceil|clz32|cos|cosh|exp|expm1|floor|fround|hypot|imul|log|log1p|log10|log2|max|min|pow|random|round|sign|sin|sinh|sqrt|tan|tanh|trunc|E|LN2|LN10|LOG2E|LOG10E|PI|SQRT1_2|SQRT2)/g,'Math.$1')
+															.replace(/\^/g,'**')
+															.replace(/\|/,'Math.abs(')
+															.replace(/\|/,')')
+const presets = [[
+				'|cos(a^2)+sin(b^2)|/2',
+				'f(x,y)',
+				'100',
+				'f(y,x)'
+			],[
+				'|tan(x/y)*(y-sin(x))+cos(x/y)|*x',
+				'f(x,y)',
+				'100',
+				'f(y,x)'
+			],[
+				'sin(x)^tan(x/y)',
+				'f(x,y)',
+				'100',
+				'f(y,x)'
+			],[
+				'|tan(x/y)*(y-sin(y*x))+cos(x/y)|*x',
+	    	'f(x,y)',
+	    	'100',
+	    	'f(y,x)'
+			],[
+				'atan2(sin(y/x),cos(y/x))',
+	    	'f(x,y)',
+	    	'100',
+	    	'f(y,x)'
+			],[
+				'|cos(x/y)-tan(x/y)*(y-sin(y*x))|*x',
+				'f(x,y)',
+				'100',
+				'f(y,x)'
+			],[
+				'tan(sin(x)/y)',
+				'f(x,y)',
+				'100',
+				'f(y,x)'
+		]]
+let width = height = 64
+let mode = 'hsl'
+let functions = format_function(presets[0])
+const canvas_element = document.getElementById('ripple-weave')
+const canvas_context = canvas_element.getContext('2d')
+const inputs = [...document.querySelectorAll('input,select')]
+const downloads = [...document.getElementsByClassName('download')]
+const handler = event => {
+				const val = event.target.value
+				if ( val ) {
+					const name = event.target.name
+					switch ( name ) {
+						case 'width':
+							width = value = Math.max ( 1 , val )
+							break
+						case 'height':
+							height = val = Math.max ( 1 , val )
+							break
+						case 'mode':
+							mode = val
+							break
+						case 'presets':
+							functions = presets [ val ]
+							break
+						case 'f0':
+							functions[0] = val
+							break
+						case 'f1':
+							functions[1] = format_function(val)
+							break
+						case 'f2':
+							functions[2] = format_function(val)
+							break
+						case 'f3':
+							functions[3] = format_function(val)
+						break
+					}
+				}
+			} ,
+			draw = () => {
+				canvas.width = width
+				canvas.height = height
+				for ( let x = 0 ; x < width ; x ++ ) {
+					for ( let y = 0 ; y < height ; y ++ ) {
+						canvas_context.fillStyle = ( mode === 'hsl' ) ? `hsl(${functions[1]*360}deg,${functions[2]*100}%,${functions[2]*100}%)` : `rgb(${functions[1]*255},${functions[2]*255},${functions[2]*255})`
+						canvas_context.fillRect( x , y , 1 , 1 )
+					}
+				}
+			}
 inputs.forEach((element)=>{
-  element.addEventListener('input',handler)
-  element.addEventListener('change',draw)
+	element.addEventListener('input',handler)
+	element.addEventListener('change',draw)
 })
 downloads.forEach((element)=>{
-  element.addEventListener('click',()=>{
-  	element.download=f_input_string.replace(/\|/g,'।').replace(/\//g,'÷').replace(/\*/g,'×').replace(/\-/g,'−')+'.png'
-    element.href = canvas.toDataURL(`img/${element.id}`).replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
-  } , false)
+	element.addEventListener('click',()=>{
+		element.href = canvas_image.toDataURL(`img/${element.id}`).replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
+	} , false)
 })
 draw()
-    </script>
-  </body>
+		</script>
+	</body>
 </html>
