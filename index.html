@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html>
+<html lang='en'>
 	<head>
 		<title>RippleWeave</title>
-		<meta utf='8'>
-		<meta id='author'			 content='Xing Liu'>
-		<meta id='description'	content='2 spatial + 1 color dimension'>
-		<meta id='keywords'		 content='graph,math,wallpaper'>
+		<meta charset='utf-8'>
+		<meta id='author'	content='Xing Liu'>
+		<meta id='description' content='2 spatial + 1 color dimension'>
+		<meta id='keywords'	content='graph,math,wallpaper'>
 		<link rel='shortcut icon' type='image/png' href='fav.png'>
 		<style>
 html,body{
@@ -42,7 +42,7 @@ main{
 	text-align-last:center;
 }
 
-section>section{
+section{
 	display:inline-flex;
 }
 
@@ -55,16 +55,16 @@ section>section{
 	outline:none;
 }
 
-.download{
+[download]{
 	text-decoration:none;
 }
 
-section>*{
+section{
 	width:100%;
 	margin:.2rem 0;
 }
 
-section>section>*{
+section>*{
 	padding:.2rem;
 	font-size:inherit;
 	font-family:inherit;
@@ -74,7 +74,7 @@ section>section>*{
 	border-width:.2rem;
 	border-style:solid;
 }
-section>section>*+*{
+section>*+*{
 	margin-left:0;
 }
 
@@ -126,16 +126,13 @@ input:focus:hover,.download:focus:hover{
 	}
 }
 
-#custom-function-option{
-	display:none;
-}
 		</style>
 	</head>
 	<body>
-		<canvas id='ripple-weave'></canvas>
+		<canvas></canvas>
 		<main>
 			<h1>RippleWeave</h1>
-			<section>
+			<article>
 				<h2>A function grapher by Xing</h2>
 				<section>
 					<label>presets</label>
@@ -149,32 +146,51 @@ input:focus:hover,.download:focus:hover{
 						<option value='6'>Night</option>
 					</select>
 				 </section>
-			</section>
-			<section>
-				<h2>functions</h2>
+			</article>
+			<article>
+				<h2>defined functions</h2>
 				<section>
 					<label>f(a,b)</label>
-					<input id='f0' type='text' value='|sin(a^2)+cos(b^2)|/2'>
+					<input id='defined-f' type='text' value='|cos(a^2)+sin(b^2)|/2'>
 				</section>
 				<section>
-					<label id='c1'>hue</label>
-					<input id='f1' type='text' value='f(x,y)'>
+					<label>g(a,b)</label>
+					<input id='defined-g' type='text' value='0'>
 				</section>
 				<section>
-					<label id='c2'>saturation</label>
-					<input id='f2' type='text' value='100'>
+					<label>h</label>
+					<input id='defined-h' type='text' value='0'>
 				</section>
 				<section>
-					<label id='c3'>luminosity</label>
-					<input id='f3' type='text' value='f(y,x)'>
+					<label>k</label>
+					<input id='defined-k' type='text' value='0'>
 				</section>
-			</section>
-			<section>
+				<section>
+					<label>z</label>
+					<input id='defined-z' type='text' value='1'>
+				</section>
+			</article>
+			<article>
+				<h2>rendered functions</h2>
+				<section>
+					<label id='channel-0'>hue</label>
+					<input id='rendered-0' type='text' value='f(x,y)'>
+				</section>
+				<section>
+					<label id='channel-1'>saturation</label>
+					<input id='rendered-1' type='text' value='1'>
+				</section>
+				<section>
+					<label id='channel-2'>luminosity</label>
+					<input id='rendered-2' type='text' value='f(y,x)'>
+				</section>
+			</article>
+			<article>
 				<h2>render</h2>
 				<section>
 					<label>size</label>
-					<input id='width' type='number' value='64'>
-					<input id='height' type='number' value='64'>
+					<input id='width' type='number' value='32'>
+					<input id='height' type='number' value='32'>
 				</section>
 				<section>
 					<label>channels</label>
@@ -185,105 +201,11 @@ input:focus:hover,.download:focus:hover{
 				</section>
 				<section>
 					<label>download</label>
-					<a class='download image' id='png' download='ripple-weave.png' href='#'>PNG</a>
-					<a class='download image' id='jpg' download='ripple-weave.jpg' href='#'>JPG</a>
+					<a id='png' download='ripple-weave.png' href='#'>PNG</a>
+					<a id='jpg' download='ripple-weave.jpg' href='#'>JPG</a>
 				</section>
-			</section>
+			</article>
 		</main>
-	<script>
-const painter = new Worker('painter.js')
-const presets = [[
-				'|cos(a^2)+sin(b^2)|/2',
-				'f(x,y)','100','f(y,x)'
-			],[
-				'|tan(x/b)*(b-sin(a))+cos(a/b)|*a',
-				'f(x,y)','100','f(y,x)'
-			],[
-				'sin(a)^tan(a/b)',
-				'f(x,y)','100','f(y,x)'
-			],[
-				'|tan(a/b)*(b-sin(b*a))+cos(a/b)|*a',
-				'f(x,y)','100','f(y,x)'
-			],[
-				'atan2(sin(b/a),cos(b/a))',
-				'f(x,y)','100','f(y,x)'
-			],[
-				'|cos(a/b)-tan(a/b)*(b-sin(b*a))|*a',
-				'f(x,y)','100','f(y,x)'
-			],[
-				'tan(sin(a)/b)',
-				'f(x,y)','100','f(y,x)'
-		]]
-let width = height = 64
-let mode = 'hsl'
-let functions = presets[0]
-const canvas_element = document.getElementById('ripple-weave')
-const canvas_context = canvas_element.getContext('2d')
-const inputs = [...document.querySelectorAll('input,select')]
-const downloads = [...document.getElementsByClassName('download')]
-function handler ( event ) {
-	const val = event.target.value
-	if ( val ) {
-		const id = event.target.id
-		switch ( id ) {
-			case 'width':
-				width = value = Math.max ( 1 , val )
-				break
-			case 'height':
-				height = value = Math.max ( 1 , val )
-				break
-			case 'mode':
-				mode = val
-				if ( val === 'hsl' ) {
-					document.getElementById('c1').innerText = 'hue'
-					document.getElementById('c2').innerText = 'saturation'
-					document.getElementById('c3').innerText = 'luminosity'
-				} else {
-					document.getElementById('c1').innerText = 'red'
-					document.getElementById('c2').innerText = 'green'
-					document.getElementById('c3').innerText = 'blue'
-				}
-				break
-			case 'presets':
-				functions = presets [ val ]
-				document.getElementById('f0').value = functions[0]
-				document.getElementById('f1').value = functions[1]
-				document.getElementById('f2').value = functions[2]
-				document.getElementById('f3').value = functions[3]
-				break
-			case 'f0':
-				functions[0] = val
-				break
-			case 'f1':
-				functions[1] = val
-				break
-			case 'f2':
-				functions[2] = val
-				break
-			case 'f3':
-				functions[3] = val
-			break
-		}
-	}
-}
-function request_paint () {
-	painter.postMessage([width,height,mode,functions])
-}
-painter.onmessage = function ( image ) {
-	canvas_element.width = width
-	canvas_element.height = height
-	canvas_context.putImageData(image.data)
-}
-inputs.forEach(input=>{
-	input.addEventListener('input',handler)
-	input.addEventListener('change',request_paint)
-})
-downloads.forEach(link=>{
-	link.addEventListener('click',()=>{
-		link.href = canvas_element.toDataURL(`img/${link.id}`).replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
-	},false)
-})
-
-		</script>
+	<script src='main.js'></script>
 	</body>
 </html>
