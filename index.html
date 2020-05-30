@@ -133,24 +133,24 @@ input:focus:hover,.download:focus:hover{
 	<body>
 		<canvas></canvas>
 		<main>
-			<h1>RippleWeave</h1>
+			<h1>rippleweave</h1>
 			<article>
-				<h2>A function grapher by Xing</h2>
+				<h2>a function grapher by Xing</h2>
 				<section>
 					<label>presets</label>
 					<select id='presets'>
-						<option value='0' selected>Original</option>
-						<option value='1'>Extra Crispy</option>
-						<option value='2'>Glitcher</option>
-						<option value='3'>Nubbin</option>
-						<option value='4'>Atanto</option>
-						<option value='5'>Flare</option>
-						<option value='6'>Night</option>
+						<option value='0' selected>original</option>
+						<option value='1'>extra crispy</option>
+						<option value='2'>glitcher</option>
+						<option value='3'>nubbin</option>
+						<option value='4'>atanto</option>
+						<option value='5'>flare</option>
+						<option value='6'>night</option>
 					</select>
 				 </section>
 			</article>
-			<article id='defined-functions'>
-				<h2>defined functions</h2>
+			<article id='definitions'>
+				<h2>definitions</h2>
 				<section>
 					<input value='f(a,b)'>
 					<input value='|cos(a^2)+sin(b^2)|/2'>
@@ -166,22 +166,18 @@ input:focus:hover,.download:focus:hover{
 				</section><section>
 					<input value='z'>
 					<input value='1'>
-				</section>
-			</article>
-			<article id='rendered-functions'>
-				<h2>rendered functions</h2>
-				<section>
-					<label>hue</label>
+				</section><section>
+					<input value='hue'>
 					<input value='f(x,y)'>
 				</section><section>
-					<label>saturation</label>
+					<input value='saturation'>
 					<input value='1'>
 				</section><section>
-					<label>luminosity</label>
+					<input value='luminosity'>
 					<input value='f(y,x)'>
 				</section>
 			</article>
-			<article>
+			<article id='render'>
 				<h2>render</h2>
 				<section>
 					<label>size</label>

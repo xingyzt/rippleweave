@@ -1,7 +1,5 @@
-function $(query){
-	const elements = [...document.querySelectorAll(query)]
-	return (elements.length>1) ? elements : elements[0]
-}
+const element = query => document.querySelector(query)
+const elements = query => [...document.querySelectorAll(query)]
 const painter = new Worker('painter.js')
 const presets = [
 	[
@@ -27,15 +25,15 @@ const presets = [
 		],
 		[
 			'hue',
-			'f((x-h)/scale,(y-k)/z)',
+			'f((x-h)/scale,(y-k)/scale)',
 		],
 		[
 			'saturation',
 			'1',
 		],
 		[
-			'lum',
-			'f((y-k)/scale,(x-h)/z)',
+			'luminosity',
+			'f((y-k)/scale,(x-h)/scale)',
 		],
 	],
 	[
@@ -74,47 +72,17 @@ const presets = [
 		]
 	],
 ]
-let width = height = 32
-let mode = 'hsl'
-let fn_strings = presets[0]
-const canvas_element = $('canvas')
-const canvas_context = canvas_element.getContext('2d')
+
+const canvas = {
+	width: 32,
+	height: 32,
+	mode: 'hsl',
+	element: element('canvas')
+}
+canvas.context = canvas.element.getContext('2d')
+
 function handler ( event ) {
-	const val = event.target.value
-	if ( val ) {
-		const id = event.target.id
-		switch ( id ) {
-			case 'width':
-				width = Math.max(1,val)
-				break
-			case 'height':
-				height = Math.max(1,val)
-				break
-			case 'mode':
-				mode = val
-				if(mode==='hsl'){
-					$('channel-0').innerText='hue'
-					$('channel-1').innerText='saturation'
-					$('channel-2').innerText='luminosity'
-				}else{
-					$('channel-0').innerText='red'
-					$('channel-1').innerText='green'
-					$('channel-2').innerText='blue'
-				}
-				break
-			case 'presets':
-				fn_strings = presets[val]
-				break
-			case 'defined-f': fn_strings.defined.f = val ;break
-			case 'defined-g': fn_strings.defined.g = val ;break
-			case 'defined-h': fn_strings.defined.h = val ;break
-			case 'defined-k': fn_strings.defined.k = val ;break
-			case 'defined-scale': fn_strings.defined.z = val ;break
-			case 'rendered-0': fn_strings.rendered[0] = val ;break
-			case 'rendered-1': fn_strings.rendered[1] = val ;break
-			case 'rendered-2': fn_strings.rendered[2] = val ;break
-		}
-	}
+}
 }
 function sync_info () {
 	$('width').value = width
