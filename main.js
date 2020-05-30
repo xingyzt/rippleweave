@@ -3,106 +3,77 @@ function $(query){
 	return (elements.length>1) ? elements : elements[0]
 }
 const painter = new Worker('painter.js')
-const fn_presets = [
-			{
-				defined: {
-					f: '|cos(a^2)+sin(b^2)|/2',
-					g: '0',
-					h: '0',
-					k: '0',
-					z: '1'
-				},
-				rendered: [
-					'f((x-h)/z,(y-k)/z)',
-					'1',
-					'f((y-k)/z,(x-h)/z)'
-				]
-			},
-			{
-				defined: {
-					f: '|tan(x/b)*(b-sin(a))+cos(a/b)|*a',
-					g: '0',
-					h: '0',
-					k: '0',
-					z: '1'
-				},
-				rendered: [
-					'f((x-h)/z,(y-k)/z)',
-					'1',
-					'f((y-k)/z,(x-h)/z)'
-				]
-			},
-			{
-				defined: {
-					f: 'sin(a)^tan(a/b)',
-					g: '0',
-					h: '0',
-					k: '0',
-					z: '1'
-				},
-				rendered: [
-					'f((x-h)/z,(y-k)/z)',
-					'1',
-					'f((y-k)/z,(x-h)/z)'
-				]
-			},
-			{
-				defined: {
-					f: '|tan(a/b)*(b-sin(b*a))+cos(a/b)|*a',
-					g: '0',
-					h: '0',
-					k: '0',
-					z: '1'
-				},
-				rendered: [
-					'f((x-h)/z,(y-k)/z)',
-					'1',
-					'f((y-k)/z,(x-h)/z)'
-				]
-			},
-			{
-				defined: {
-					f: 'atan2(sin(b/a),cos(b/a))',
-					g: '0',
-					h: '0',
-					k: '0',
-					z: '1'
-				},
-				rendered: [
-					'f((x-h)/z,(y-k)/z)',
-					'1',
-					'f((y-k)/z,(x-h)/z)'
-				]
-			},
-			{
-				defined: {
-					f: '|cos(a/b)-tan(a/b)*(b-sin(b*a))|*a',
-					g: '0',
-					h: '0',
-					k: '0',
-					z: '1'
-				},
-				rendered: [
-					'f((x-h)/z,(y-k)/z)',
-					'1',
-					'f((y-k)/z,(x-h)/z)'
-				]
-			},
-			{
-				defined: {
-					f: 'tan(sin(a)/b)',
-					g: '0',
-					h: '0',
-					k: '0',
-					z: '1'
-				},
-				rendered: [
-					'f((x-h)/z,(y-k)/z)',
-					'1',
-					'f((y-k)/z,(x-h)/z)'
-				]
-			}
+const presets = [
+	[
+		[
+			'f(a,b)',
+			'|cos(a^2)+sin(b^2)|/2',
+		],
+		[
+			'g(a,b)',
+			'0',
+		],
+		[
+			'h',
+			'0',
+		],
+		[
+			'k',
+			'0',
+		],
+		[
+			'scale',
+			'1'
+		],
+		[
+			'hue',
+			'f((x-h)/scale,(y-k)/z)',
+		],
+		[
+			'saturation',
+			'1',
+		],
+		[
+			'lum',
+			'f((y-k)/scale,(x-h)/z)',
+		],
+	],
+	[
+		[
+				'f(a,b)',
+				'|tan(x/b)*(b-sin(a))+cos(a/b)|*a',
+		],
+	],
+	[
+			[
+				'f(a,b)',
+				'sin(a)^tan(a/b)',
+			],
+	],
+			[
+				'f(a,b)',
+				'|tan(a/b)*(b-sin(b*a))+cos(a/b)|*a',
+			]
+	],
+	[
+		[
+			'f(a,b)',
+			'atan2(sin(b/a),cos(b/a))',
+		],
+	],
+	[
+		[
+			'f(a,b)',
+			'|cos(a/b)-tan(a/b)*(b-sin(b*a))|*a',
+		],
+	],
+	[
+		[
+			'f(a,b)',
+			'tan(sin(a)/b)',
 		]
+	],
+]
 let width = height = 32
 let mode = 'hsl'
 let fn_strings = presets[0]
@@ -138,7 +109,7 @@ function handler ( event ) {
 			case 'defined-g': fn_strings.defined.g = val ;break
 			case 'defined-h': fn_strings.defined.h = val ;break
 			case 'defined-k': fn_strings.defined.k = val ;break
-			case 'defined-z': fn_strings.defined.z = val ;break
+			case 'defined-scale': fn_strings.defined.z = val ;break
 			case 'rendered-0': fn_strings.rendered[0] = val ;break
 			case 'rendered-1': fn_strings.rendered[1] = val ;break
 			case 'rendered-2': fn_strings.rendered[2] = val ;break

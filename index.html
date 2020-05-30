@@ -3,9 +3,9 @@
 	<head>
 		<title>RippleWeave</title>
 		<meta charset='utf-8'>
-		<meta id='author'	content='Xing Liu'>
+		<meta id='author' content='Xing Liu'>
 		<meta id='description' content='2 spatial + 1 color dimension'>
-		<meta id='keywords'	content='graph,math,wallpaper'>
+		<meta id='keywords' content='graph,math,wallpaper'>
 		<link rel='shortcut icon' type='image/png' href='fav.png'>
 		<style>
 html,body{
@@ -87,8 +87,10 @@ h2{
 	border:solid .2rem #222;
 }
 
-label{
+label,input:first-child{
 	flex:0 1 8rem;
+}
+label{
 	background:#222;
 	border-color:#000;
 }
@@ -120,7 +122,7 @@ input:focus:hover,.download:focus:hover{
 	border-color:#555
 }
 
-@media(prefers-color-scheme:light){
+@media screen and (prefers-color-scheme:light){
 	main{
 		filter:invert(1)
 	}
@@ -147,42 +149,36 @@ input:focus:hover,.download:focus:hover{
 					</select>
 				 </section>
 			</article>
-			<article>
+			<article id='defined-functions'>
 				<h2>defined functions</h2>
 				<section>
-					<label>f(a,b)</label>
-					<input id='defined-f' type='text' value='|cos(a^2)+sin(b^2)|/2'>
-				</section>
-				<section>
-					<label>g(a,b)</label>
-					<input id='defined-g' type='text' value='0'>
-				</section>
-				<section>
-					<label>h</label>
-					<input id='defined-h' type='text' value='0'>
-				</section>
-				<section>
-					<label>k</label>
-					<input id='defined-k' type='text' value='0'>
-				</section>
-				<section>
-					<label>z</label>
-					<input id='defined-z' type='text' value='1'>
+					<input value='f(a,b)'>
+					<input value='|cos(a^2)+sin(b^2)|/2'>
+				</section><section>
+					<input value='g(a,b)'>
+					<input value='0'>
+				</section><section>
+					<input value='h'>
+					<input value='0'>
+				</section><section>
+					<input value='k'>
+					<input value='0'>
+				</section><section>
+					<input value='z'>
+					<input value='1'>
 				</section>
 			</article>
-			<article>
+			<article id='rendered-functions'>
 				<h2>rendered functions</h2>
 				<section>
-					<label id='channel-0'>hue</label>
-					<input id='rendered-0' type='text' value='f(x,y)'>
-				</section>
-				<section>
-					<label id='channel-1'>saturation</label>
-					<input id='rendered-1' type='text' value='1'>
-				</section>
-				<section>
-					<label id='channel-2'>luminosity</label>
-					<input id='rendered-2' type='text' value='f(y,x)'>
+					<label>hue</label>
+					<input value='f(x,y)'>
+				</section><section>
+					<label>saturation</label>
+					<input value='1'>
+				</section><section>
+					<label>luminosity</label>
+					<input value='f(y,x)'>
 				</section>
 			</article>
 			<article>
@@ -191,21 +187,19 @@ input:focus:hover,.download:focus:hover{
 					<label>size</label>
 					<input id='width' type='number' value='32'>
 					<input id='height' type='number' value='32'>
-				</section>
-				<section>
+				</section><section>
 					<label>channels</label>
 					<select id='mode'>
 						<option value='hsl'>hue/saturation/luminosity</option>
 						<option value='rgb'>red/green/blue</option>
 					</select>
-				</section>
-				<section>
+				</section><section>
 					<label>download</label>
 					<a id='png' download='ripple-weave.png' href='#'>PNG</a>
 					<a id='jpg' download='ripple-weave.jpg' href='#'>JPG</a>
 				</section>
 			</article>
 		</main>
-	<script src='main.js'></script>
+		<script type='module'  src='main.js'></script>
 	</body>
 </html>
