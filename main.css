@@ -1,0 +1,121 @@
+html,body{
+	margin:0;
+}
+
+*{
+	box-sizing:border-box;
+}
+
+canvas{
+	position:fixed;
+	top:0;
+	right:0;
+	width:100vmin;
+	height:100vmin;
+	background:#fff;
+	image-rendering:pixelated
+}
+
+main{
+	position:fixed;
+	overflow:scroll;
+	display:block;
+	left:0;
+	width:calc(100vw - 100vmin);
+	height:100vh;
+	min-width:20rem;
+	background:#111;
+	font-family:Monospace,Monospace;
+	color:#fff;
+	padding:1rem 1rem 0 .6rem;
+	text-align:center;
+	text-align-last:center;
+}
+
+section{
+	display:inline-flex;
+}
+
+::selection{
+	background:#888;
+	color:#fff;
+}
+
+:focus{
+	outline:none;
+}
+
+[download]{
+	text-decoration:none;
+}
+
+section{
+	width:100%;
+	margin:.2rem 0;
+}
+
+section>*{
+	padding:.2rem;
+	font-size:inherit;
+	font-family:inherit;
+	color:inherit;
+	height:2rem;
+	margin:0 .4rem;
+	border-width:.2rem;
+	border-style:solid;
+}
+section>*+*{
+	margin-left:0;
+}
+
+h2{
+	font-size:1rem;
+	font-weight:normal;
+	margin-top:1rem;
+	padding:.2rem;
+	color:#888;
+	border:solid .2rem #222;
+}
+
+label,input:first-child{
+	flex:0 1 8rem;
+}
+label{
+	background:#222;
+	border-color:#000;
+}
+input,select,.download{
+	flex:1 1 8rem;
+	background:#000;
+	border-color:#222;
+}
+select,.download{
+	cursor:pointer;
+}
+
+input[type=range]{
+	-webkit-appearance:none;
+	background:#000;
+	cursor:ew-resize;
+	background-size:calc(100% - .5rem) calc(100% - .5rem);
+	background-position:center;
+	background-repeat:no-repeat;
+}
+input:hover:not(:focus),.download:hover:not(:focus){
+	background:#111;
+	border-color:#333
+}
+input:focus,.download:focus{
+	border-color:#444
+}
+input:focus:hover,.download:focus:hover{
+	border-color:#555
+}
+
+@media screen and (prefers-color-scheme:light){
+	main{
+		filter:invert(1)
+	}
+}
+		</style>
+	</head>
