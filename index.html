@@ -26,48 +26,51 @@
 						<option value='6'>night</option>
 					</select>
 				 </section>
-			</article>
-			<article id='definitions'>
+			</article<article id='definitions'>
 				<h2>definitions</h2>
 				<section>
-					<input value='f(a,b)'>
+					<label>f(a,b)</label>
 					<input value='|cos(a^2)+sin(b^2)|/2'>
 				</section><section>
-					<input value='g(a,b)'>
+					<label>g(a,b)</label>
 					<input value='0'>
 				</section><section>
-					<input value='h'>
+					<label>h</label>
 					<input value='0'>
 				</section><section>
-					<input value='k'>
+					<label>k</label>
 					<input value='0'>
 				</section><section>
-					<input value='z'>
+					<label>scale</label>
 					<input value='1'>
 				</section><section>
-					<input value='hue'>
+					<label>channel 1</label>
 					<input value='f(x,y)'>
 				</section><section>
-					<input value='saturation'>
+					<label>channel 2<label>
 					<input value='1'>
 				</section><section>
-					<input value='luminosity'>
+					<label>channel 3'</label>
 					<input value='f(y,x)'>
-				</section>
-			</article>
-			<article id='render'>
-				<h2>render</h2>
-				<section>
-					<label>size</label>
-					<input id='width' type='number' value='32'>
-					<input id='height' type='number' value='32'>
+				</section><section>
+					<label>width</label>
+					<input type='number' value='32'>
+				</section><section>
+					<label>height</label>
+					<input type='number' value='32'>
 				</section><section>
 					<label>channels</label>
-					<select id='mode'>
-						<option value='hsl'>hue/saturation/luminosity</option>
-						<option value='rgb'>red/green/blue</option>
+					<select id='channels'>
+						<option value='hsl'>
+                            hue/saturation/luminosity
+                        </option><option value='rgb'>
+                            red/green/blue
+                        </option>
 					</select>
-				</section><section>
+				</section>
+			</article><article id='export'>
+				<h2>export</h2>
+				<section>
 					<label>download</label>
 					<a id='png' download='ripple-weave.png' href='#'>PNG</a>
 					<a id='jpg' download='ripple-weave.jpg' href='#'>JPG</a>
