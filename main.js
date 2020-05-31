@@ -48,25 +48,29 @@ const canvas = {
 canvas.context = canvas.element.getContext('2d')
 
 const handler = event => {
-
+	definitions[event.target.previousSibling.innerText] = event.target.innerText
 	if ( 
 		event.type === 'change'
 		|| ( canvas.width * canvas.height < 1<<12 )
-	) request_paint()
+	) calculate()
 }
-function calculate () {
+
+const calculate = () => {
 	console.log('main: requesting calculations...')
-	painter.postMessage(JSON.stringify([width,height,mode,fn_strings]))
+	painter.postMessage(JSON.stringify(definitions))
 }
-painter.addEventListener('mmessage', image => {
+
+painter.addEventListener('message', image => {
 	console.log('main: received image data')
 	canvas.element.width = canvas.width
 	canvas.element.height = canvas.height
 	canvas.context.putImageData(image.data,0,0)
 	console.log('main: painted image data')
 })
+
 element('#definitions').addEventListener('input', handler)
 element('#definitions').addEventListener('change', handler)
+
 elements('[download]').forEach(link=>{
 	link.addEventListener('click',()=>{
 		link.href = canvas.element.toDataURL(`img/${link.id}`).replace(/^data:image\/[^;]*/, 'data:application/octet-stream')

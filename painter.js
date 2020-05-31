@@ -1,4 +1,6 @@
+self.importScripts('mathjs.min.js')
 onmessage = function (message) {
+
 	console.log('worker: received paint request')
 	const [width,height,mode,fn_strings] = JSON.parse(message.data)
 
