@@ -1,7 +1,6 @@
 const element = query => document.querySelector(query)
 const elements = query => [...document.querySelectorAll(query)]
-const painter = new Worker('painter.js')
-
+const worker = new Worker('worker.js')
 const presets = [
 	{
 		'f(a,b)':	'|cos(a^2)+sin(b^2)|/2',
@@ -56,23 +55,19 @@ const handler = event => {
 }
 
 const calculate = () => {
-	console.log('main: requesting calculations...')
-	painter.postMessage(JSON.stringify(definitions))
+	worker.postMessage(JSON.stringify(definitions))	
+	canvas.element.width = definitions['width']
+	canvas.element.height = definitions['height']
 }
-
-painter.addEventListener('message', image => {
-	console.log('main: received image data')
-	canvas.element.width = canvas.width
-	canvas.element.height = canvas.height
-	canvas.context.putImageData(image.data,0,0)
-	console.log('main: painted image data')
+worker.addEventListener('message', message=>{
+	
 })
 
 element('#definitions').addEventListener('input', handler)
 element('#definitions').addEventListener('change', handler)
 
-elements('[download]').forEach(link=>{
-	link.addEventListener('click',()=>{
+elements('[download]').forEach(link => {
+	link.addEventListener('click', () => {
 		link.href = canvas.element.toDataURL(`img/${link.id}`).replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
 	},false)
 })
