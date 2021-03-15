@@ -219,133 +219,102 @@ input[id=lum-offset][type=range]{
 			</section>
 		</main>
 	<script>
-const format_function = ( fn ) => {
-	return fn.replace(/f\((.*),(.*)\)/g,functions[0].replace(/a/g,'$1').replace(/b/g,'$2'))
-		.replace(/(x|y)(x|y)/g,'$1*$2')
-		.replace(/(x|y)(x|y)/g,'$1*$2')
-		.replace(/(abs|acos|acosh|asin|asinh|atan|atanh|atan2|cbrt|ceil|clz32|cos|cosh|exp|expm1|floor|fround|hypot|imul|log|log1p|log10|log2|max|min|pow|random|round|sign|sin|sinh|sqrt|tan|tanh|trunc|E|LN2|LN10|LOG2E|LOG10E|PI|SQRT1_2|SQRT2)/g,'Math.$1')
-		.replace(/\^/g,'**')
-		.replace(/\|/,'Math.abs(')
-		.replace(/\|/,')')
-}
-const presets = [[
-				'|cos(a^2)+sin(b^2)|/2',
-				'f(x,y)',
-				'100',
-				'f(y,x)'
-			],[
-				'|tan(x/y)*(y-sin(x))+cos(x/y)|*x',
-				'f(x,y)',
-				'100',
-				'f(y,x)'
-			],[
-				'sin(x)^tan(x/y)',
-				'f(x,y)',
-				'100',
-				'f(y,x)'
-			],[
-				'|tan(x/y)*(y-sin(y*x))+cos(x/y)|*x',
-	    	'f(x,y)',
-	    	'100',
-	    	'f(y,x)'
-			],[
-				'atan2(sin(y/x),cos(y/x))',
-	    	'f(x,y)',
-	    	'100',
-	    	'f(y,x)'
-			],[
-				'|cos(x/y)-tan(x/y)*(y-sin(y*x))|*x',
-				'f(x,y)',
-				'100',
-				'f(y,x)'
-			],[
-				'tan(sin(x)/y)',
-				'f(x,y)',
-				'100',
-				'f(y,x)'
-		]]
-let width = height = 64
-let mode = 'hsl'
-let functions = presets[0]
-const canvas_element = document.getElementById('ripple-weave')
-const canvas_context = canvas_element.getContext('2d')
-const inputs = [...document.querySelectorAll('input,select')]
-const downloads = [...document.getElementsByClassName('download')]
-const handler = event => {
-	const val = event.target.value
-	if ( val ) {
-		const id = event.target.id
-		switch ( id ) {
-			case 'width':
-				width = value = Math.max ( 1 , val )
-				break
-			case 'height':
-				height = val = Math.max ( 1 , val )
-				break
-			case 'mode':
-				mode = val
-				if ( val === 'hsl' ) {
-					document.getElementById('c1').innerText = 'hue'
-					document.getElementById('c2').innerText = 'saturation'
-					document.getElementById('c3').innerText = 'luminosity'
-				} else {
-					document.getElementById('c1').innerText = 'red'
-					document.getElementById('c2').innerText = 'green'
-					document.getElementById('c3').innerText = 'blue'
-				}
-				break
-			case 'presets':
-				functions = presets [ val ]
-				break
-			case 'f0':
-				functions[0] = val
-				break
-			case 'f1':
-				functions[1] = val
-				break
-			case 'f2':
-				functions[2] = val
-				break
-			case 'f3':
-				functions[3] = val
-			break
-		}
+const canvas = document.getElementById('ripple-weave')
+const gl = canvas.getContext('webgl')
+const positions = [
+	+1, +1,
+	-1, +1,
+	-1, -1,
+	+1, +1,
+	-1, -1,
+	+1, -1,
+]
+const vs = createShader(gl, gl.VERTEX_SHADER, `
+	attribute vec4 a_position;
+	void main() {
+		gl_Position = a_position;
 	}
-}
-const draw = () => {
-	canvas_element.width = width
-	canvas_element.height = height
-	const formatted_functions = [
-		format_function(functions[1]),
-		format_function(functions[2]),
-		format_function(functions[3])
-	]
-	for ( let x = 0 ; x < width ; x ++ ) {
-		for ( let y = 0 ; y < height ; y ++ ) {
-			const results = [
-				eval(formatted_functions[0]),
-				eval(formatted_functions[1]),
-				eval(formatted_functions[2])
-			]
-			if ( mode === 'hsl' ) {
-				canvas_context.fillStyle = `hsl(${results[0]*360}deg,${results[1]*100}%,${results[2]*100}%)`
-			} else {
-				canvas_context.fillStyle = `rgb(${results[0]*255},${results[1]*255},${results[2]*255})`
-			}
-			canvas_context.fillRect( x , y , 1 , 1 )
+`)
+gl.enable(gl.CULL_FACE)
+
+function draw({f,h,s,l}){
+	const fs = createShader(gl, gl.FRAGMENT_SHADER, `
+		precision mediump float;
+		uniform vec2 u_resolution;
+		uniform float u_zoom;
+		float f(float a, float b) {
+			return ${f};
 		}
-	}
+		vec3 rgb(vec3 c){
+				vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);
+				vec3 p = abs(fract(c.xxx + K.xyz) * 6.0 - K.www);
+				return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
+		}
+		void main() {
+			vec2 p = exp(-u_zoom)*(gl_FragCoord.xy/u_resolution-0.5);
+			float x = p.x;
+			float y = p.y;
+			vec3 hsl = vec3(${h},${s}/100.,${l});
+			gl_FragColor = vec4(rgb(hsl), 1);
+		}
+	`)
+	const program = createProgram(gl, vs, fs);
+	const positionLoc = gl.getAttribLocation(program, 'a_position')
+	const positionBuffer = gl.createBuffer()
+	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW)
+	canvas.width = canvas.clientWidth
+	canvas.height = canvas.clientHeight
+	gl.viewport(0, 0, canvas.width, canvas.height)
+	gl.useProgram(program)
+	gl.enableVertexAttribArray(positionLoc)
+	
+	const resolutionLoc = gl.getUniformLocation(program, 'u_resolution')
+	gl.uniform2f(resolutionLoc, canvas.width, canvas.height)
+	
+	const zoomLoc = gl.getUniformLocation(program, 'u_zoom')
+	gl.uniform1f(zoomLoc, -4)
+	
+	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
+	gl.vertexAttribPointer(positionLoc,2,gl.FLOAT,false,0,0)
+	gl.drawArrays(gl.TRIANGLES,0,6)
 }
-inputs.forEach(input=>{
-	input.addEventListener('input',handler)
-	input.addEventListener('change',draw)
+
+draw({
+	f: 'abs(sin(pow(a,2.))+cos(pow(b,2.)))/2.',
+	h: 'f(x,y)',
+	s: '100.',
+	l: 'f(y,x)',
 })
-downloads.forEach(link=>{
-	link.addEventListener('click',()=>{
-		link.href = canvas_image.toDataURL(`img/${element.id}`).replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
-	},false)
+
+
+draw({
+	f: 'abs(sin(pow(a,3.))+cos(pow(b,2.)))/2.',
+	h: 'f(x,y)',
+	s: '100.',
+	l: 'f(y,x)',
 })
-draw()
+
+function createShader(gl, type, source) {
+	const shader = gl.createShader(type)
+	gl.shaderSource(shader, source)
+	gl.compileShader(shader)
+	const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS)
+	if (success) return shader
+	gl.deleteShader(shader)
+}
+function createProgram(gl, vertexShader, fragmentShader) {
+	const program = gl.createProgram()
+	gl.attachShader(program, vertexShader)
+	gl.attachShader(program, fragmentShader)
+	gl.linkProgram(program)
+	const success = gl.getProgramParameter(program, gl.LINK_STATUS)
+	if (success) return program
+ 
+	console.log(gl.getProgramInfoLog(program))
+	gl.deleteProgram(program)
+}
+
 		</script>
 	</body>
 </html>
