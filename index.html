@@ -3,9 +3,9 @@
 	<head>
 		<title>RippleWeave</title>
 		<meta utf='8'>
-		<meta id='author'			 content='Xing Liu'>
-		<meta id='description'	content='2 spatial + 1 color dimension'>
-		<meta id='keywords'		 content='graph,math,wallpaper'>
+		<meta id='author' content='Xing Liu'>
+		<meta id='description' content='2 spatial + 1 color dimension'>
+		<meta id='keywords' content='graph,math,wallpaper'>
 		<link rel='shortcut icon' type='image/png' href='fav.png'>
 		<style>
 html,body{
@@ -200,9 +200,12 @@ input[id=lum-offset][type=range]{
 			<section>
 				<h2>render</h2>
 				<section>
+					<label>zoom</label>
+					<input id='zoom' type='number' value='-4'>
+				</section>
+				<section>
 					<label>size</label>
-					<input id='width' type='number' value='64'>
-					<input id='height' type='number' value='64'>
+					<input id='size' type='number' value='256'>
 				</section>
 				<section>
 					<label>channels</label>
@@ -221,6 +224,7 @@ input[id=lum-offset][type=range]{
 	<script>
 const canvas = document.getElementById('ripple-weave')
 const gl = canvas.getContext('webgl')
+
 const positions = [
 	+1, +1,
 	-1, +1,
@@ -237,11 +241,16 @@ const vs = createShader(gl, gl.VERTEX_SHADER, `
 `)
 gl.enable(gl.CULL_FACE)
 
-function draw({f,h,s,l}){
+function draw(){		
+	const f = float('f0')
+	const hue = float('f1')
+	const sat = float('f2')
+	const lum = float('f3')
+	const zoom = float('zoom')
+	const size = float('size')
+		
 	const fs = createShader(gl, gl.FRAGMENT_SHADER, `
 		precision mediump float;
-		uniform vec2 u_resolution;
-		uniform float u_zoom;
 		float f(float a, float b) {
 			return ${f};
 		}
@@ -251,49 +260,42 @@ function draw({f,h,s,l}){
 				return c.z * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), c.y);
 		}
 		void main() {
-			vec2 p = exp(-u_zoom)*(gl_FragCoord.xy/u_resolution-0.5);
+			vec2 p = (gl_FragCoord.xy/${size}-0.5)/exp(${zoom});
 			float x = p.x;
 			float y = p.y;
-			vec3 hsl = vec3(${h},${s}/100.,${l});
+			vec3 hsl = vec3(${hue},${sat},${lum});
 			gl_FragColor = vec4(rgb(hsl), 1);
 		}
 	`)
+		
 	const program = createProgram(gl, vs, fs);
 	const positionLoc = gl.getAttribLocation(program, 'a_position')
 	const positionBuffer = gl.createBuffer()
 	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
 	gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(positions), gl.STATIC_DRAW)
-	canvas.width = canvas.clientWidth
-	canvas.height = canvas.clientHeight
+	canvas.width = canvas.height = val('size')
 	gl.viewport(0, 0, canvas.width, canvas.height)
 	gl.useProgram(program)
 	gl.enableVertexAttribArray(positionLoc)
-	
-	const resolutionLoc = gl.getUniformLocation(program, 'u_resolution')
-	gl.uniform2f(resolutionLoc, canvas.width, canvas.height)
-	
-	const zoomLoc = gl.getUniformLocation(program, 'u_zoom')
-	gl.uniform1f(zoomLoc, -4)
 	
 	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
 	gl.vertexAttribPointer(positionLoc,2,gl.FLOAT,false,0,0)
 	gl.drawArrays(gl.TRIANGLES,0,6)
 }
 
-draw({
-	f: 'abs(sin(pow(a,2.))+cos(pow(b,2.)))/2.',
-	h: 'f(x,y)',
-	s: '100.',
-	l: 'f(y,x)',
-})
+function val(id){
+	return document.getElementById(id)
+	.value.toString()
+}
 
+function float(id){
+	return val(id).replace(/((?:\d+(?:\.\d*)?)|(?:\.\d+))/g,'float($&)')
+}
 
-draw({
-	f: 'abs(sin(pow(a,3.))+cos(pow(b,2.)))/2.',
-	h: 'f(x,y)',
-	s: '100.',
-	l: 'f(y,x)',
-})
+draw()
+
+document.querySelector('form')
+.addEventListener('input',draw)
 
 function createShader(gl, type, source) {
 	const shader = gl.createShader(type)
@@ -301,7 +303,7 @@ function createShader(gl, type, source) {
 	gl.compileShader(shader)
 	const success = gl.getShaderParameter(shader, gl.COMPILE_STATUS)
 	if (success) return shader
-	gl.deleteShader(shader)
+	 gl.deleteShader(shader)
 }
 function createProgram(gl, vertexShader, fragmentShader) {
 	const program = gl.createProgram()
