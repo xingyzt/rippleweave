@@ -26,7 +26,7 @@ canvas{
 	image-rendering:pixelated
 }
 			
-main{
+form{
 	position:fixed;
 	overflow:scroll;
 	display:block;
@@ -146,7 +146,7 @@ input[id=lum-offset][type=range]{
 
 						
 @media(prefers-color-scheme:no-preference){
-	main{
+	form{
 		filter:invert(1)
 	}
 	input[id=lum-offset][type=range]{
@@ -191,7 +191,7 @@ input[id=lum-offset][type=range]{
 					</section>
 					<section>
 						<label id='c2'>saturation</label>
-						<input id='f2' type='text' value='100'>
+						<input id='f2' type='text' value='1'>
 					</section>
 					<section>
 						<label id='c3'>luminosity</label>
@@ -224,6 +224,16 @@ input[id=lum-offset][type=range]{
 			</form>
 		</main>
 		<script>
+const presets = [
+  'abs(cos(a*a)+sin(b*b))/2',
+  'abs(tan(a/b)*(b-sin(a))+cos(a/b))*a',
+  'pow(sin(a),tan(a/b))',
+  'abs(tan(a/b)*(b-sin(b*a))+cos(a/b))*a',
+  'atan(sin(b/a),cos(b/a))',
+  'abs(cos(a/b)-tan(a/b)*(b-sin(b*a)))*a',
+  'tan(sin(a)/b)',
+]
+    
 const canvas = document.getElementById('ripple-weave')
 const gl = canvas.getContext('webgl')
 
@@ -296,6 +306,10 @@ function float(id){
 
 draw()
 
+document.getElementById('presets').addEventListener('input',()=>{
+  document.getElementById('f0').value = presets[val('presets')]
+})
+
 document.querySelector('form')
 .addEventListener('input',draw)
 
@@ -318,7 +332,6 @@ function createProgram(gl, vertexShader, fragmentShader) {
 	console.log(gl.getProgramInfoLog(program))
 	gl.deleteProgram(program)
 }
-
 		</script>
 	</body>
 </html>
