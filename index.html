@@ -160,68 +160,70 @@ input[id=lum-offset][type=range]{
 		</style>
 	</head>
 	<body>
-		<canvas id='ripple-weave'></canvas>
 		<main>
-			<h1>RippleWeave</h1>
-			<section>
-				<h2>A function grapher by Xing</h2>
+			<canvas id='ripple-weave'></canvas>
+			<form>
+				<h1>RippleWeave</h1>
 				<section>
-					<label>presets</label>
-					<select id='presets'>
-						<option value='0' selected>Original</option>
-						<option value='1'>Extra Crispy</option>
-						<option value='2'>Glitcher</option>
-						<option value='3'>Nubbin</option>
-						<option value='4'>Atanto</option>
-						<option value='5'>Flare</option>
-						<option value='6'>Night</option>
-					</select>
-				 </section>
-			</section>
-			<section>
-				<h2>functions</h2>
-				<section>
-					<label>f(a,b)</label>
-					<input id='f0' type='text' value='abs(sin(pow(a,3))+cos(pow(b,2)))/2'>
+					<h2>A function grapher by Xing</h2>
+					<section>
+						<label>presets</label>
+						<select id='presets'>
+							<option value='0' selected>Original</option>
+							<option value='1'>Extra Crispy</option>
+							<option value='2'>Glitcher</option>
+							<option value='3'>Nubbin</option>
+							<option value='4'>Atanto</option>
+							<option value='5'>Flare</option>
+							<option value='6'>Night</option>
+						</select>
+					 </section>
 				</section>
 				<section>
-					<label id='c1'>hue</label>
-					<input id='f1' type='text' value='f(x,y)'>
+					<h2>functions</h2>
+					<section>
+						<label>f(a,b)</label>
+						<input id='f0' type='text' value='abs(sin(pow(a,3))+cos(pow(b,2)))/2'>
+					</section>
+					<section>
+						<label id='c1'>hue</label>
+						<input id='f1' type='text' value='f(x,y)'>
+					</section>
+					<section>
+						<label id='c2'>saturation</label>
+						<input id='f2' type='text' value='100'>
+					</section>
+					<section>
+						<label id='c3'>luminosity</label>
+						<input id='f3' type='text' value='f(y,x)'>
+					</section>
 				</section>
 				<section>
-					<label id='c2'>saturation</label>
-					<input id='f2' type='text' value='100'>
+					<h2>render</h2>
+					<section>
+						<label>zoom</label>
+						<input id='zoom' type='number' value='-4'>
+					</section>
+					<section>
+						<label>size</label>
+						<input id='size' type='number' value='256'>
+					</section>
+					<section>
+						<label>channels</label>
+						<select id='mode'>
+							<option value='hsl'>hue/saturation/luminosity</option>
+							<option value='rgb'>red/green/blue</option>
+						</select>
+					</section>
+					<section>
+						<label>download</label>
+						<a class='download image' id='png' download='ripple-weave.png' href='#'>PNG</a>
+						<a class='download image' id='jpg' download='ripple-weave.jpg' href='#'>JPG</a>
+					</section>
 				</section>
-				<section>
-					<label id='c3'>luminosity</label>
-					<input id='f3' type='text' value='f(y,x)'>
-				</section>
-			</section>
-			<section>
-				<h2>render</h2>
-				<section>
-					<label>zoom</label>
-					<input id='zoom' type='number' value='-4'>
-				</section>
-				<section>
-					<label>size</label>
-					<input id='size' type='number' value='256'>
-				</section>
-				<section>
-					<label>channels</label>
-					<select id='mode'>
-						<option value='hsl'>hue/saturation/luminosity</option>
-						<option value='rgb'>red/green/blue</option>
-					</select>
-				</section>
-				<section>
-					<label>download</label>
-					<a class='download image' id='png' download='ripple-weave.png' href='#'>PNG</a>
-					<a class='download image' id='jpg' download='ripple-weave.jpg' href='#'>JPG</a>
-				</section>
-			</section>
+			</form>
 		</main>
-	<script>
+		<script>
 const canvas = document.getElementById('ripple-weave')
 const gl = canvas.getContext('webgl')
 
