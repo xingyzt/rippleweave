@@ -301,7 +301,7 @@ function val(id){
 }
 
 function float(id){
-	return val(id).replace(/((?:\d+(?:\.\d*)?)|(?:\.\d+))/g,'float($&)')
+	return val(id).replace(/(?<!\w)((?:\d+(?:\.\d*)?)|(?:\.\d+))/g,'float($&)')
 }
 
 draw()
