@@ -170,12 +170,16 @@ input[id=lum-offset][type=range]{
 						<label>presets</label>
 						<select id='presets'>
 							<option value='0' selected>Original</option>
-							<option value='1'>Extra Crispy</option>
-							<option value='2'>Glitcher</option>
-							<option value='3'>Nubbin</option>
-							<option value='4'>Atanto</option>
-							<option value='5'>Flare</option>
-							<option value='6'>Night</option>
+							<option value='1'>Turbine</option>
+							<option value='2'>Bident</option>
+							<option value='3'>Escape</option>
+							<option value='4'>Bismuth</option>
+							<option value='5'>Windspinner</option>
+							<option value='6'>Spill</option>
+							<option value='7'>Atanto</option>
+							<option value='8'>Flare</option>
+							<option value='9'>Night</option>
+							<option value='10'>Ramiel</option>
 						</select>
 					 </section>
 				</section>
@@ -206,7 +210,7 @@ input[id=lum-offset][type=range]{
 					</section>
 					<section>
 						<label>size</label>
-						<input id='size' type='number' value='256'>
+						<input id='size' type='number' value='512'>
 					</section>
 					<section>
 						<label>channels</label>
@@ -225,13 +229,83 @@ input[id=lum-offset][type=range]{
 		</main>
 		<script>
 const presets = [
-  'abs(cos(a*a)+sin(b*b))/2',
-  'abs(tan(a/b)*(b-sin(a))+cos(a/b))*a',
-  'pow(sin(a),tan(a/b))',
-  'abs(tan(a/b)*(b-sin(b*a))+cos(a/b))*a',
-  'atan(sin(b/a),cos(b/a))',
-  'abs(cos(a/b)-tan(a/b)*(b-sin(b*a)))*a',
-  'tan(sin(a)/b)',
+  {
+    f0: 'abs(cos(a*a)+sin(b*b))/2',
+    f1: 'f(x,y)',
+    f2: '1',
+    f3: 'f(y,x)',
+    zoom: '-4',
+  },
+  {
+    f0: 'abs(sin(atan(b,a)/sin(sqrt(a*a+b*b))))',
+    f1: 'f(x*y,y*y)/10',
+    f2: 'f(x*x,y*x)-1',
+    f3: '-log(f(x*y,y*y))',
+    zoom: '-2',
+  },
+  {
+    f0: 'mod(tan(a-sin(b*sin(a))),3/a)',
+    f1: 'f(x,y)+0.8',
+    f2: '0.4',
+    f3: 'clamp(pow(f(x,y),0.5),0,1)',
+    zoom: '-3',
+  },
+  {
+    f0: 'abs(tan(a/b)*(b-sin(a))+cos(a/b))*a',
+    f1: 'f(x,y)',
+    f2: '0.5',
+    f3: 'f(y,x)',
+    zoom: '-2',
+  },
+  {
+    f0: 'sin(a/sin(a)-b/sin(b))/(log(a*a*b*b+100)/10)',
+    f1: 'f(x,y)',
+    f2: '0.9',
+    f3: 'f(x,y)',
+    zoom: '-3',
+  },
+  {
+    f0: 'pow(sin(a),tan(a/b))',
+    f1: 'f(x,y)',
+    f2: '0.8',
+    f3: 'f(y,x)-f(x,y)',
+    zoom: '-1.1',
+  },
+  {
+    f0: 'abs(tan(a/b)*(b-sin(b*a))+cos(a/b))*a',
+    f1: 'f(x+1,y)/4+0.9',
+    f2: '0.9',
+    f3: 'f(x+3,y)*0.3',
+    zoom: '-2',
+  },
+  {
+    f0: 'atan(sin(b/a),cos(b/a))',
+    f1: 'f(x,y)',
+    f2: '1',
+    f3: 'f(x*x,y)',
+    zoom: '-1',
+  },
+  {
+    f0: 'abs(cos(a/b)-tan(a/b)*(b-sin(b*a)))*a',
+    f1: 'f(x,y)',
+    f2: '1',
+    f3: 'f(x*x,y)',
+    zoom: '-2.5',
+  },
+  {
+    f0: 'tan(sin(a)/b)',
+    f1: 'f(x,y)',
+    f2: '1',
+    f3: 'f(x*x,y)',
+    zoom: '-2.5',
+  },
+  {
+    f0: 'sin(b*sin(a*sin(b*sin(a*sin(b*sin(a*b))))))',
+    f1: 'f(exp(abs(y)),exp(abs(x)))/5+0.25+sqrt(abs(x)+abs(y))',
+    f2: '1',
+    f3: 'f(exp(abs(y)),exp(abs(x)))',
+    zoom: '-1.6',
+  },
 ]
     
 const canvas = document.getElementById('ripple-weave')
@@ -307,7 +381,10 @@ function float(id){
 draw()
 
 document.getElementById('presets').addEventListener('input',()=>{
-  document.getElementById('f0').value = presets[val('presets')]
+  const preset = presets[val('presets')]
+  for(const key in preset){
+    document.getElementById(key).value = preset[key]
+  }
 })
 
 document.querySelector('form')
