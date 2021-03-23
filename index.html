@@ -169,10 +169,10 @@ input[id=lum-offset][type=range]{
 					<section>
 						<label>presets</label>
 						<select id='presets'>
-							<option value='0' selected>Original</option>
+							<option value='0' selected>Flyeye</option>
 							<option value='1'>Turbine</option>
 							<option value='2'>Bident</option>
-							<option value='3'>Escape</option>
+							<option value='3'>Silk</option>
 							<option value='4'>Bismuth</option>
 							<option value='5'>Windspinner</option>
 							<option value='6'>Spill</option>
@@ -180,6 +180,7 @@ input[id=lum-offset][type=range]{
 							<option value='8'>Flare</option>
 							<option value='9'>Night</option>
 							<option value='10'>Ramiel</option>
+							<option value='11'>Ascension</option>
 						</select>
 					 </section>
 				</section>
@@ -251,10 +252,10 @@ const presets = [
     zoom: '-3',
   },
   {
-    f0: 'abs(tan(a/b)*(b-sin(a))+cos(a/b))*a',
-    f1: 'f(x,y)',
-    f2: '0.5',
-    f3: 'f(y,x)',
+    f0: 'sin(a/cos(b/sin(a/cos(b))))',
+    f1: 'f(exp(x),exp(y))/2+0.5',
+    f2: '1-f(exp(x),exp(y))',
+    f3: 'f(exp(x),exp(y))',
     zoom: '-2',
   },
   {
@@ -305,6 +306,13 @@ const presets = [
     f2: '1',
     f3: 'f(exp(abs(y)),exp(abs(x)))',
     zoom: '-1.6',
+  },
+  {
+    f0: 'abs(tan(a/b)*(b-sin(a))+cos(a/b))*a',
+    f1: 'f(x,y)',
+    f2: '0.5',
+    f3: 'f(y,x)',
+    zoom: '-2',
   },
 ]
     
