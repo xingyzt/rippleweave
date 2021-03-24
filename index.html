@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html>
 	<head>
@@ -222,8 +223,8 @@ input[id=lum-offset][type=range]{
 					</section>
 					<section>
 						<label>download</label>
-						<a class='download image' id='png' download='ripple-weave.png' href='#'>PNG</a>
-						<a class='download image' id='jpg' download='ripple-weave.jpg' href='#'>JPG</a>
+						<a class='download' id='png' download='ripple-weave.png' href='#'>PNG</a>
+						<a class='download' id='jpg' download='ripple-weave.jpg' href='#'>JPG</a>
 					</section>
 				</section>
 			</form>
@@ -317,7 +318,7 @@ const presets = [
 ]
     
 const canvas = document.getElementById('ripple-weave')
-const gl = canvas.getContext('webgl')
+const gl = canvas.getContext('webgl',{preserveDrawingBuffer: true})
 
 const positions = [
 	+1, +1,
@@ -397,6 +398,16 @@ document.getElementById('presets').addEventListener('input',()=>{
 
 document.querySelector('form')
 .addEventListener('input',draw)
+
+document.querySelectorAll('.download')
+.forEach(link=>{
+	link.addEventListener('click',()=>{
+    draw()
+		link.href = canvas
+     .toDataURL(`img/${link.id}`)
+     .replace(/^data:image\/[^;]*/, 'data:application/octet-stream')
+	},false)
+})
 
 function createShader(gl, type, source) {
 	const shader = gl.createShader(type)
