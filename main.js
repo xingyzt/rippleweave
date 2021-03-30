@@ -48,6 +48,7 @@ canvas.context = canvas.element.getContext('2d')
 
 const handler = event => {
 	definitions[event.target.previousSibling.innerText] = event.target.innerText
+	console.log('main: updated definitions!')
 	if ( 
 		event.type === 'change'
 		|| ( canvas.width * canvas.height < 1<<12 )
@@ -56,11 +57,12 @@ const handler = event => {
 
 const calculate = () => {
 	worker.postMessage(JSON.stringify(definitions))	
+	console.log('main: requesting calculations...')
 	canvas.element.width = definitions['width']
 	canvas.element.height = definitions['height']
 }
-worker.addEventListener('message', message=>{
-	
+worker.addEventListener('message', message => {
+	console.log('main: calculations received!')	
 })
 
 element('#definitions').addEventListener('input', handler)

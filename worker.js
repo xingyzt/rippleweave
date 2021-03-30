@@ -4,7 +4,11 @@ self.addEventListener('message',message=>{
 	console.log(math.evaluate('1+1'))
 	console.log('worker: received paint request')
 	const definitions = JSON.parse(message.data)
-
+	const channels = [1,2,3].map(value=>{
+		console.log(definitions['channel_'+value])
+		math.compile(definitions['channel_'+value])
+	})
+	console.log(definitions,channels[1].evaluate(definitions))
 	console.log('worker: sending image data...')
 })
 function fnToImageData (fn_evaluables,width,height) {
