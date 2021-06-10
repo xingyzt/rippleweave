@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang='en-US'>
 	<head>
@@ -318,6 +319,19 @@ const presets = [
 		
 const canvas = document.getElementById('ripple-weave')
 const gl = canvas.getContext('webgl2') || canvas.getContext('webgl')
+const v2 = gl.constructor.name==='WebGL2RenderingContext'
+const vs_header = v2 ?
+`#version 300 es
+in vec4 a_position;`
+:
+`attribute vec4 a_position;`
+const fs_header = v2 ?
+`#version 300 es
+precision highp float;
+out vec4 outColor;`
+:
+`precision highp float;`
+const fs_out = v2 ? 'outColor' : 'gl_FragColor'
 
 const positions = [
 	+1, +1,
@@ -327,12 +341,11 @@ const positions = [
 	-1, -1,
 	+1, -1,
 ]
-const vs = createShader(gl, gl.VERTEX_SHADER, `
-	attribute vec4 a_position;
-	void main() {
-		gl_Position = a_position;
-	}
-`)
+const vs = createShader(gl, gl.VERTEX_SHADER, `${vs_header}
+  void main() {
+    gl_Position = a_position;
+  }`)
+
 gl.enable(gl.CULL_FACE)
 
 draw()
@@ -359,8 +372,7 @@ function draw(){
 	const zoom = float('zoom')
 	const size = float('size')
 		
-	const fs = createShader(gl, gl.FRAGMENT_SHADER, `
-		precision mediump float;
+	const fs = createShader(gl, gl.FRAGMENT_SHADER, `${fs_header}
 		float f(float a, float b) {
 			return ${f};
 		}
@@ -374,7 +386,7 @@ function draw(){
 			float x = p.x;
 			float y = p.y;
 			vec3 hsl = vec3(${hue},${sat},${lum});
-			gl_FragColor = vec4(rgb(hsl), 1);
+			${fs_out} = vec4(rgb(hsl), 1);
 		}
 	`)
 		
