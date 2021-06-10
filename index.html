@@ -317,7 +317,7 @@ const presets = [
 ]
 		
 const canvas = document.getElementById('ripple-weave')
-const gl = canvas.getContext('webgl',{preserveDrawingBuffer: true})
+const gl = canvas.getContext('webgl2') || canvas.getContext('webgl')
 
 const positions = [
 	+1, +1,
