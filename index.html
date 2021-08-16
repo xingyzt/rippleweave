@@ -211,7 +211,7 @@ input[id=lum-offset][type=range]{
 					</section>
 					<section>
 						<label>size</label>
-						<input id='size' type='number' value='512'>
+						<input id='size' type='number' value='512' autocomplete='off'>
 					</section>
 					<section>
 						<label>channels</label>
@@ -368,7 +368,7 @@ function draw(){
 	const a = float('a')
 	const b = float('b')
 	const c = float('c')
-  const mode = val('mode')
+	const mode = val('mode')
 	const zoom = float('zoom')
 	const size = float('size')
 		
@@ -386,9 +386,9 @@ function draw(){
 			float x = p.x;
 			float y = p.y;
 			vec3 col = vec3(${a},${b},${c});
-      #if ${mode === 'hsl' ? 1 : 0}
-        col = rgb(col);
-      #endif
+			#if ${mode === 'hsl' ? 1 : 0}
+				col = rgb(col);
+			#endif
 			${fs_out} = vec4(col, 1);
 		}
 	`)
