@@ -385,6 +385,8 @@ function draw(){
 			vec2 p = (gl_FragCoord.xy/${size}-0.5)/exp(${zoom});
 			float x = p.x;
 			float y = p.y;
+			float r = length(p);
+			float t = atan(y,x);
 			vec3 col = vec3(${a},${b},${c});
 			#if ${mode === 'hsl' ? 1 : 0}
 				col = rgb(col);
