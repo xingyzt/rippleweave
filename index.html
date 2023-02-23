@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang='en-US'>
 	<head>
@@ -347,6 +348,13 @@ const vs = createShader(gl, gl.VERTEX_SHADER, `${vs_header}
 
 gl.enable(gl.CULL_FACE)
 
+if(window.location.hash.startsWith("#rippleweave=")) {
+  const state = JSON.parse(decodeURIComponent(window.location.hash.replace("#rippleweave=","")))
+  console.log(state)
+  for(const key in state)
+    if(state[key])
+      document.getElementById(key).value = state[key]
+}
 draw()
 
 document.getElementById('presets').addEventListener('input',()=>{
@@ -371,7 +379,7 @@ function draw(){
 	const mode = val('mode')
 	const zoom = float('zoom')
 	const size = float('size')
-		
+
 	const fs = createShader(gl, gl.FRAGMENT_SHADER, `${fs_header}
 		float f(float a, float b) {
 			return ${f};
@@ -408,6 +416,15 @@ function draw(){
 	gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer)
 	gl.vertexAttribPointer(positionLoc,2,gl.FLOAT,false,0,0)
 	gl.drawArrays(gl.TRIANGLES,0,6)
+  
+	window.location.hash = "#rippleweave=" + encodeURIComponent(JSON.stringify({
+    f: val('f'),
+    a: val('a'),
+    b: val('b'),
+    c: val('c'),
+    mode: val('mode'),
+    zoom: val('zoom')
+  }))
 }
 
 function val(id){
