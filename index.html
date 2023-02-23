@@ -182,6 +182,12 @@ input[id=lum-offset][type=range]{
 							<option value='9'>Night</option>
 							<option value='10'>Ramiel</option>
 							<option value='11'>Ascension</option>
+							<option value='12'>Dart</option>
+							<option value='13'>Timesh</option>
+							<option value='14'>Pulp</option>
+							<option value='15'>Grating</option>
+							<option value='16'>Croissant</option>
+							<option value='17'>Frostum</option>
 						</select>
 					 </section>
 				</section>
@@ -314,6 +320,48 @@ const presets = [
 		b: '0.5',
 		c: 'f(y,x)',
 		zoom: '-2',
+	},
+	{
+		f: 'atan(sin(pow(b,1/a)),a)',
+		a: 'f(x,y)*5',
+		b: 'f(x,y)/4',
+		c: 'f(x,y)',
+		zoom: '-2.5',
+	},
+	{
+		f: 'tan(exp(a*a)-exp(b*b))',
+		a: 'f(y,x)',
+		b: '1',
+		c: 'f(x,y)',
+		zoom: '-3.5',
+	},
+	{
+		f: 'tan(sin(a)*b)*tan(sin(b)*a)',
+		a: 'log(f(log(abs(y)),log(abs(x))))/5',
+		b: '1',
+		c: 'sign(f(log(abs(y)),log(abs(x)))-0.5)',
+		zoom: '1',
+	},
+	{
+		f: 'tan(sin(a)*b)*tan(sin(b)*a)',
+		a: 'f(y/x,x/y)-0.5',
+		b: '1',
+		c: 'sign(f(y,x)-0.5)',
+		zoom: '-3',
+	},
+	{
+		f: 'abs(a*b)*(abs(sin(length(vec2(a,b))))+cos(2*a/b))',
+		a: 'f(x,y)+0.8',
+		b: '0.9',
+		c: 'mod(f(x,y),1.2)',
+		zoom: '-2',
+	},
+	{
+		f: 'a/b+sin(a-cos(exp(b*b/abs(a))))',
+		a: 'f(x,y)',
+		b: 'log(f(x,y))*2',
+		c: 'f(x,y)',
+		zoom: '-4',
 	},
 ]
 		
